@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.sasha.pdfviewer'
+    compileSdk 33
+    signingConfigs {
+        dev {
+            v2SigningEnabled true
+        }
+    }
+
+
+    defaultConfig {
+        applicationId "com.sasha.pdfviewer"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.firebase:firebase-database:20.1.0'
+    implementation 'androidx.camera:camera-view:1.2.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.itextpdf:itext7-core:7.2.3'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'ru.alexbykov:nopaginate:0.9.9'
+
+    /*   implementation 'com.github.tripplemac:pdfbox-android-lite:1.8.9.2'*/
+
+
+}

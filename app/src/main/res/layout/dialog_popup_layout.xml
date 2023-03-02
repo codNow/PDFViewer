@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    android:background="@drawable/popup_background"
+    android:id="@+id/layoutDialogContainer"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/warning_background"
+            android:id="@+id/first_linear"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/textTitle"
+                android:text=""
+                android:layout_marginStart="10dp"
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:fontFamily="@font/montserrat"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/close_btn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@color/image_color" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/first_linear"
+            android:background="@color/primary"
+            android:id="@+id/second_linear">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textMessage"
+                android:text=""
+                android:textStyle="bold"
+                android:fontFamily="@font/josefont"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="18sp"
+                android:layout_marginEnd="30dp"
+                android:textColor="@color/text_color"
+                android:textSize="16sp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/edit_input"
+                android:padding="10dp"
+                android:fontFamily="@font/montserrat"
+                android:layout_marginTop="5dp"
+                android:textCursorDrawable="@drawable/cursor_colour"
+                android:id="@+id/editText"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="30dp"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:fontFamily="@font/josefont"
+                android:id="@+id/question_text"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/buttonNo"
+                    android:text="@string/cancel"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/josefont"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_primary_dark"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/buttonYes"
+                    android:text="@string/yes"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/josefont"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_primary_dark"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</RelativeLayout>

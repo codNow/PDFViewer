@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pink">#E569D5</color>
+    <color name="purple_500">#03A9F4</color>
+    <color name="teal_700">#FFEB3B</color>
+    <color name="transparent">#00000000</color>
+    <color name="Red_color">#EA0963</color>
+    <color name="white">#ffff</color>
+
+    <color name="accent">#0F161A</color>
+    <color name="primaryDark">#080B0D</color>
+    <color name="primary">#0D1216</color>
+    <color name="light_blue">#2F4056</color>
+    <color name="light_orange">#F4BD6B</color>
+
+
+    <color name="background_color">#182329</color>
+    <color name="text_color">#F1EEEE</color>
+    <color name="text_color2">#A6A5A5</color>
+    <color name="text_color3">#81C9E1</color>
+    <color name="view_color">#1E1E1E</color>
+    <color name="image_color">#F1EFEF</color>
+    <color name="purple_700">#B834CF</color>
+    <color name="blue">#2196F3</color>
+    <color name="dark_blue">#1C1E20</color>
+    <color name="line_color">#395654</color>
+    <color name="text_color4">#414040</color>
+</resources>

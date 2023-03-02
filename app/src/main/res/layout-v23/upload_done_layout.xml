@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="10dp"
+    android:elevation="10dp"
+    app:cardBackgroundColor="@color/primary">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/done_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/upload_done_icon"
+            app:tint="@color/blue" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_below="@+id/upload_done_icon"
+            android:textColor="@color/text_color3"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:id="@+id/successText"/>
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/successText"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/done_icon"
+       />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/view_your_file_click_here"
+            android:layout_below="@id/done_icon"
+            android:layout_marginBottom="10dp"
+            android:textSize="16sp"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:fontFamily="@font/josefont"
+            android:id="@+id/pathText"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="18sp"
+            android:textColor="@color/purple_500"
+            android:layout_below="@id/pathText"
+            android:layout_marginTop="10dp"
+            android:id="@+id/question_text"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/question_text"
+            android:id="@+id/linear1">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/no"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button_background"
+                android:textColor="@color/white"
+                android:id="@+id/no_btn"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/yes"
+                android:background="@drawable/button_background"
+                android:textColor="@color/white"
+                android:id="@+id/yes_btn"/>
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:text="@string/ok"
+            android:layout_below="@id/question_text"
+            android:background="@drawable/button_background"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:id="@+id/okButton"/>
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+</androidx.cardview.widget.CardView>

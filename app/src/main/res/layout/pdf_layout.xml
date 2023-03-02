@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:id="@+id/pdf_layout_id"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/accent"
+        android:text="@string/please_note_that_the_converted_document_may_differ_in_formatting_compared_to_the_original"
+        android:elevation="10dp"
+        android:padding="15dp"
+        android:textColor="@color/white"
+        android:layout_margin="5dp"
+        android:fontFamily="@font/montserrat"
+        android:id="@+id/convert_note"
+        android:visibility="gone"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_check_circle_24"
+        android:id="@+id/checking"
+        android:visibility="gone"
+        android:layout_centerVertical="true"/>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:src="@drawable/app_logo"
+        android:padding="5dp"
+        android:layout_toEndOf="@id/checking"
+        android:id="@+id/imageView" />
+    <com.github.barteksc.pdfviewer.PDFView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_toEndOf="@id/checking"
+        android:id="@id/pdfView"/>
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/imageView"
+        android:layout_centerVertical="false"
+        android:layout_marginEnd="65dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pdf_name"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/text_color"
+            android:fontFamily="@font/josefont"
+            android:id="@+id/pdfName"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/montserrat"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/text_color2"
+                android:textSize="13sp"
+                android:id="@+id/pdfPath"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_1245kb"
+                android:fontFamily="@font/montserrat"
+                android:textSize="13sp"
+                android:textColor="@color/text_color2"
+                android:textStyle="bold"
+                android:layout_toRightOf="@id/linear"
+                android:layout_marginStart="15dp"
+                android:id="@+id/pdfSize"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_centerVertical="true">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:button="@drawable/custom_checkbox"
+            android:drawableTint="@color/blue"
+            android:buttonTint="@color/blue"
+            android:id="@+id/recent_checkbox"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_dot_vertical"
+            android:layout_centerVertical="true"
+            android:visibility="visible"
+            android:id="@+id/option_icon"
+            app:tint="@color/image_color" />
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:background="@color/line_color"
+        android:layout_below="@id/linear"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="20dp" />
+
+
+</RelativeLayout>

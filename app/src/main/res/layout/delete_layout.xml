@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/popup_background"
+    android:id="@+id/layoutDialogContainer"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/warning_background"
+            android:id="@+id/first_linear"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/textTitle"
+                android:text="@string/delete_file"
+                android:layout_marginStart="10dp"
+                android:padding="10dp"
+                android:textColor="@color/Red_color"
+                android:textSize="18sp"
+                android:fontFamily="@font/montserrat"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/close_btn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@color/image_color" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/first_linear"
+            android:background="@color/primary"
+            android:id="@+id/second_linear">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textMessage"
+                android:text="@string/are_your_sure_to_clear_list"
+                android:textStyle="bold"
+                android:fontFamily="@font/montserrat"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="15sp"
+                android:layout_marginEnd="30dp"
+                android:textColor="@color/text_color"
+                android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/buttonNo"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/josefont"
+                    android:textStyle="bold"
+                    android:text="Cancel"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_primary_dark"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/buttonYes"
+                    android:text="Yes"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/josefont"
+                    android:textStyle="bold"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/button_primary_dark"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</RelativeLayout>
