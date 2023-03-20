@@ -9,10 +9,14 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,9 +27,12 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -44,7 +51,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class AllPdfFileViewActivity extends AppCompatActivity implements View.OnLongClickListener {
+public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdapter.OnFileLongClick, PdfAdapter.OnItemClicks {
 
     private RecyclerView recyclerView, wordRecyclerView;
     private ArrayList<PdfModel> mediaList = new ArrayList<>();
@@ -65,9 +72,12 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
     private ArrayList<Uri> uris = new ArrayList<>();
     private NestedScrollView nestedScrollView;
     private ProgressBar loadingBar;
-    private ImageView delete_items, share_items, choose_backBtn;
-
-
+    private ImageView delete_items, share_items, choose_backBtn, selectButton;
+    private boolean isSelectAll = false;
+    private String defaultText = "Select File";
+    boolean isSelectMode;
+    ArrayList<String> strings = new ArrayList<>();
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,22 +99,20 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
         delete_items = findViewById(R.id.delete_items);
         share_items = findViewById(R.id.share_items);
         choose_backBtn = findViewById(R.id.chose_backBtn);
-      /*  back_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });*/
-        choose_backBtn.setOnClickListener(new View.OnClickListener() {
+        selectButton = findViewById(R.id.select_items);
+        back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
             }
         });
 
+        buttonListener();
+
 
         progressBar.setVisibility(View.VISIBLE);
-        new CountDownTimer(50, 50){
+        search_layout.setVisibility(View.GONE);
+        new CountDownTimer(1500, 1000){
 
             @Override
             public void onTick(long l) {
@@ -113,11 +121,9 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
             public void onFinish() {
                 loadAllPdf();
                 progressBar.setVisibility(View.GONE);
-
+                search_layout.setVisibility(View.VISIBLE);
             }
         }.start();
-
-
         search_text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -126,10 +132,149 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
             public void onTextChanged(CharSequence inputText, int i, int i1, int i2) {
                 searchFiles(inputText.toString());
                 clear_button.setVisibility(View.VISIBLE);
-               
+
             }
             @Override
             public void afterTextChanged(Editable editable) {
+            }
+        });
+
+
+    }
+
+    private void buttonListener() {
+        selectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isSelectAll) {
+                    //ArrayList<PdfModel> selectedFile = multiSelectAdapter.getSelectedItems();
+                    selectAll();
+                    //After checking all items change button text
+                    selectButton.setImageDrawable(getDrawable(R.drawable.deselect_all_icon));
+                    isSelectAll = true;
+                    pdfAdapter.notifyDataSetChanged();
+
+                } else {
+                    //If button text is Deselect All remove check from all items
+                    //multiSelectAdapter.removeSelection();
+                    deselectAll();
+                    isSelectAll = false;
+                    //After checking all items change button text
+                    selectButton.setImageDrawable(getDrawable(R.drawable.select_all_icon));
+                    pdfAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        share_items.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<PdfModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+                for (PdfModel pdfModel : selectedFilePaths) {
+                    String filePath = pdfModel.getPath();
+                    String id = pdfModel.getId();
+                    File file = new File(filePath);
+                    uris.add(Uri.parse(filePath));
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("application/pdf");
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(Intent.createChooser(intent, "Share"));
+                }
+
+            }
+        });
+
+        delete_items.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (count > 0) {
+                    Dialog alertDialog = new Dialog(view.getRootView().getContext());
+                    alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    alertDialog.setContentView(R.layout.delete_layout);
+                    final TextView textTile, textMessage;
+                    final Button yesButton, noButton;
+                    final ImageView close_button;
+
+                    textTile = alertDialog.findViewById(R.id.textTitle);
+                    textMessage = alertDialog.findViewById(R.id.textMessage);
+                    yesButton = alertDialog.findViewById(R.id.buttonYes);
+                    noButton = alertDialog.findViewById(R.id.buttonNo);
+                    close_button = alertDialog.findViewById(R.id.close_btn);
+
+                    textTile.setText(R.string.delete_file_title);
+                    textMessage.setText(R.string.delete_question);
+                    yesButton.setText(R.string.yes);
+                    noButton.setText(R.string.no);
+                    yesButton.setOnClickListener(new View.OnClickListener() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void onClick(View v) {
+                            int position = pdfAdapter.getSelectedPosition();
+                            ArrayList<PdfModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+                            if (selectedFilePaths != null) {
+                                for (PdfModel pdfModel : selectedFilePaths) {
+                                    String filePath = pdfModel.getPath();
+                                    String id = pdfModel.getId();
+                                    File file = new File(filePath);
+                                    if (file.exists()) {
+                                        file.delete();
+                                        selectedFilePaths.remove(file);
+                                        Uri contentUris = ContentUris.withAppendedId(
+                                                MediaStore.Files.getContentUri("external"),
+                                                Long.parseLong(id));
+                                        getApplicationContext().getContentResolver().delete(
+                                                contentUris, null, null
+                                        );
+                                        //startActivity(getIntent());
+                                        mediaList.remove(position);
+                                        recyclerView.getAdapter().notifyItemRemoved(position);
+                                        count = 0;
+                                        updateCount(count);
+
+                                    }
+
+                                }
+                            } else {
+                                Toast.makeText(AllPdfFileViewActivity.this, "Please select atleast one", Toast.LENGTH_SHORT).show();
+                            }
+                            alertDialog.dismiss();
+                        }
+                    });
+                    noButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    close_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    alertDialog.show();
+                    alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    alertDialog.getWindow().getAttributes().windowAnimations
+                            = R.style.SideMenuAnimation;
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.getWindow().setGravity(Gravity.END);
+
+
+                }
+                else{
+                    Toast.makeText(AllPdfFileViewActivity.this, "please select atleast one", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        choose_backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
         clear_button.setOnClickListener(new View.OnClickListener() {
@@ -140,6 +285,16 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
 
             }
         });
+    }
+
+
+    private void updateCount(int counts) {
+        if (counts == 0){
+            selectedText.setText("Select Files");
+        }
+        else{
+            selectedText.setText(counts + " Selected");
+        }
 
     }
     private void searchFiles(String newText) {
@@ -153,112 +308,65 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
         pdfAdapter.updateSearchList(searchList);
     }
     private void loadAllPdf() {
-        ArrayList<String> strings = new ArrayList<>();
+
         mediaList = FileUtils.allPdfFile(this);
         recyclerView.setHasFixedSize(true);
-        pdfAdapter = new PdfAdapter(getApplicationContext(), mediaList, strings, this);
+        pdfAdapter = new PdfAdapter(getApplicationContext(), mediaList, strings,  this, this);
         recyclerView.setAdapter(pdfAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        isSelectMode = pdfAdapter.isSelectMode();
         ViewCompat.setNestedScrollingEnabled(recyclerView, true);
     }
-/*
-    private ArrayList<PdfModel> loadFiles(Context context){
 
-        ArrayList<PdfModel> arrayList = new ArrayList<>();
-        mediaList.clear();
-        String recentPath = Environment.getExternalStorageDirectory() +"/RecentFile/";
-        File recentFile = new File(recentPath);
-
-        Uri uri = MediaStore.Files.getContentUri("external");
-        String [] projection = {
-                MediaStore.Files.FileColumns._ID,
-                MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE,
-                MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.MIME_TYPE,
-                MediaStore.Files.FileColumns.DATE_ADDED
-        };
-
-        String mimeType = "application/pdf";
-        String whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')";
-        String sortOrder = MediaStore.Files.FileColumns.DATE_ADDED + " DESC";
-        String[] selectionArgs = new String[] { "application/pdf", "/storage/emulated/0/RecentFile" };
-
-        Cursor cursor = context.getContentResolver().query(uri, projection,
-                whereClause, null, sortOrder);
-
-        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
-        int idPath = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-        int idTitle = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.TITLE);
-        int idSize = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
-        int date_added = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED);
-
-        if (cursor != null){
-            while (cursor.moveToNext()){
-                String pdfId = cursor.getString(idColumn);
-                String path = cursor.getString(idPath);
-                String title = cursor.getString(idTitle);
-                long size = cursor.getLong(idSize);
-                String date = cursor.getString(date_added);
-                int slashFirstIndex = path.lastIndexOf("/");
-                String subString = path.substring(0, slashFirstIndex);
-
-                boolean isSelected = false;
-                PdfModel modelPdf = new PdfModel(pdfId, title, path, convertSize(size), date, isSelected);
-                if (!subString.contains("RecentFile")) {
-                    arrayList.add(modelPdf);
-                    progressBar.setVisibility(View.GONE);
-
-                }
-
-            }
-        }
-        return arrayList;
-    }*/
-
-    private Date convertDate(String date) {
-        Date newDate = new Date();
-        return newDate;
-    }
-    private String convertSize(Long size) {
-        String s = "";
-        long kilo = 1024;
-        long mega = kilo * kilo;
-        long giga = mega * kilo;
-        long tera = giga * kilo;
-        double kb = (double) size / kilo;
-        double mb = kb / kilo;
-        double gb = mb / kilo;
-        double tb = gb / kilo;
-        if (size < kilo) {
-            s = size + " Bytes";
-        } else if (size >= kilo && size < mega) {
-            s = String.format("%.2f", kb) + " KB";
-        } else if (size >= mega && size < giga) {
-            s = String.format("%.2f", mb) + " MB";
-        } else if (size >= giga && size < tera) {
-            s = String.format("%.2f", gb) + " GB";
-        } else if (size >= tera) {
-            s = String.format("%.2f", tb) + " TB";
-        }
-        return s;
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
+  /*  @Override
     public boolean onLongClick(View v) {
         isContextTualModeEnabled = true;
         search_layout.setVisibility(View.GONE);
         choose_layout.setVisibility(View.VISIBLE);
         pdfAdapter.notifyDataSetChanged();
         return true;
+    }*/
+    private void refresh() {
+        startActivity(new Intent(getIntent()));
+        RemoveContextualActionMode();
     }
+    private void selectAll() {
+        for (PdfModel item : mediaList) {
+            item.setSelected(true);
+            if (item.isSelected()){
+                count = count + 1;
+                updateCount(count);
+            }
+        }
+        pdfAdapter.notifyDataSetChanged();
+    }
+    private void deselectAll() {
+        for (PdfModel item : mediaList) {
+            item.setSelected(false);
+            if (!item.isSelected()){
+                count = 0;
+                updateCount(count);
+            }
+        }
+        pdfAdapter.notifyDataSetChanged();
+    }
+    private void RemoveContextualActionMode() {
+        isSelectMode = false;
+        count = 0;
+        selectList.clear();
+        pdfAdapter.notifyDataSetChanged();
+        search_layout.setVisibility(View.VISIBLE);
+        choose_layout.setVisibility(View.GONE);
+        selectedText.setText("Select File");
+        deselectAll();
+        //startActivity(getIntent());
+        progressBar.setVisibility(View.GONE);
+    }
+/*
     public void makeSelection(View v, int position) {
         if (((CheckBox)v).isChecked()){
             selectList.add(mediaList.get(position));
+            isSelectAll = true;
             count = count + 1;
             updateCount(count);
         }
@@ -267,24 +375,15 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
             count = count - 1;
             updateCount(count);
         }
-
-        if (count > 0){
-            delete_items.setClickable(false);
-        }
-        else{
-            delete_items.setClickable(true);
-        }
         delete_items.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (selectList.size() > 0){
-                    new DeleteFilesTask().execute(selectList.toArray(new PdfModel[selectList.size()]));
-                }
+                new DeleteFilesTask().execute(selectList.toArray(new PdfModel[selectList.size()]));
 
             }
         });
 
-        /*delete_items.setOnClickListener(new View.OnClickListener() {
+        *//*delete_items.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -315,7 +414,7 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
                     }
                 }
             }
-        });*/
+        });*//*
 
         share_items.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -343,60 +442,6 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
         }
 
     }
-  /*  private boolean selectedFile(ArrayList<PdfModel> list, boolean canDelete){
-        for (int i = 0; i < list.size(); i++){
-            String id = list.get(i).getId();
-            String path = list.get(i).getPath();
-            uriList.add(Uri.parse(path));
-            File files = new File(path);
-            files.delete();
-            list.remove(files);
-            if (canDelete){
-                Uri contentUris = ContentUris.withAppendedId(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                        Long.parseLong(id)
-                );
-                File file = new File(path);
-                boolean isDeleted = file.delete();
-                list.remove(file);
-                if (isDeleted){
-                    getApplicationContext().getContentResolver().delete(
-                            contentUris, null, null
-                    );
-                    list.remove(i);
-                    list.clear();
-                    pdfAdapter.notifyItemRemoved(i);
-                    pdfAdapter.notifyItemRangeChanged(i, list.size());
-                }
-            }
-
-
-        }
-        return true;
-    }*/
-    private void refresh() {
-        startActivity(new Intent(getIntent()));
-        RemoveContextualActionMode();
-    }
-    private void RemoveContextualActionMode() {
-        isContextTualModeEnabled = false;
-        count = 0;
-        selectList.clear();
-        pdfAdapter.notifyDataSetChanged();
-        search_layout.setVisibility(View.VISIBLE);
-        choose_layout.setVisibility(View.GONE);
-    }
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-        if (isContextTualModeEnabled){
-            RemoveContextualActionMode();
-        }
-        else if (!isContextTualModeEnabled){
-            startActivity(new Intent(AllPdfFileViewActivity.this, SearchActivity.class));
-            overridePendingTransition(0, 0);
-        }
-    }
 
     private class DeleteFilesTask extends AsyncTask<PdfModel, Void, Boolean> {
         @Override
@@ -418,7 +463,7 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
                 }
                 if (isDeleted) {
                     Uri contentUris = ContentUris.withAppendedId(
-                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                            MediaStore.Files.getContentUri("external"),
                             Long.parseLong(id)
                     );
                     getApplicationContext().getContentResolver().delete(
@@ -441,18 +486,56 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements View.On
                 //Toast.makeText(getApplicationContext(), selectList.size() + "Deleted success", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-    private void selectAll() {
-        for (PdfModel item : selectList) {
-            item.setSelected(true);
+    }*/
+
+    @Override
+    public void onItemClick(PdfModel pdfModel, int position) {
+        isSelectMode = true;
+        if (pdfModel.isSelected()){
+            count = count + 1;
+            updateCount(count);
         }
-        pdfAdapter.notifyDataSetChanged();
+        else if (!pdfModel.isSelected()){
+            count = count - 1;
+            updateCount(count);
+        }
+        else {
+            count = 0;
+            updateCount(count);
+        }
     }
 
-    private void deselectAll() {
-        for (PdfModel item : selectList) {
-            item.setSelected(false);
+    @Override
+    public void onFileLongClick(int position) {
+        isSelectMode = true;
+        if (isSelectMode){
+            search_layout.setVisibility(View.GONE);
+            choose_layout.setVisibility(View.VISIBLE);
+            PdfModel pdfModel = mediaList.get(position);
+            pdfModel.setSelected(!pdfModel.isSelected());
+            if (pdfModel.isSelected()){
+                count = count +1;
+                updateCount(count);
+            }
         }
-        pdfAdapter.notifyDataSetChanged();
+        else{
+            search_layout.setVisibility(View.VISIBLE);
+            choose_layout.setVisibility(View.GONE);
+            isSelectMode = false;
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        if (pdfAdapter.selectMode){
+            pdfAdapter.setSelectMode(false);
+            count = 0;
+            isSelectMode = false;
+            RemoveContextualActionMode();
+        }
+        else if (!isSelectMode){
+            startActivity(new Intent(AllPdfFileViewActivity.this, SearchActivity.class));
+            overridePendingTransition(0, 0);
+        }
     }
 }

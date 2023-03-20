@@ -22,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.EventType;
@@ -79,6 +80,7 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
             @Override
             public void onClick(View view) {
                 holder.checkboxImage.setVisibility(View.VISIBLE);
+                holder.option_btn.setVisibility(View.GONE);
                 if (PdfUtils.isFileNotLock(file)) {
                     holder.checkboxImage.setVisibility(View.VISIBLE);
                     final Dialog dialog = new Dialog(view.getRootView().getContext());
@@ -99,6 +101,8 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
+                            holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
                         }
                     });
                     okBtn.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +123,7 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     dialog.getWindow().setGravity(Gravity.END);
                 } else {
-                    Toast.makeText(context, R.string.already_locked, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, R.string.file_lock_info, Snackbar.LENGTH_SHORT).show();
                 }
 
             }

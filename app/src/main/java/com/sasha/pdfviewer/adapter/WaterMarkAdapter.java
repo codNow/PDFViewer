@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
@@ -74,6 +75,7 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
             public void onClick(View view) {
                 if (EncryptDecrypt.isLockable(file)){
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.option_btn.setVisibility(View.GONE);
                     final Dialog dialog = new Dialog(view.getRootView().getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setContentView(R.layout.dialog_popup_layout);
@@ -92,6 +94,8 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
+                            holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
                         }
                     });
                     okBtn.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +110,6 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
                             }
                             dialog.dismiss();
 
-
                         }
                     });
                     dialog.show();
@@ -115,7 +118,7 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
                     dialog.getWindow().setGravity(Gravity.END);
                 }
                 else {
-                    Toast.makeText(context, "This is file is already locked !", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, R.string.file_lock_info, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });

@@ -152,7 +152,7 @@ public class ToolsActivity extends AppCompatActivity {
         compressPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ToolsActivity.this, AllToolsViewActivity.class);
+                Intent intent = new Intent(ToolsActivity.this, MergedPdfActivity.class);
                 intent.putExtra("mergeBtn", "mergeBtn");
                 startActivity(intent);
             }

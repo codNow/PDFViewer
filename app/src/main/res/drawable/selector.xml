@@ -3,9 +3,9 @@
 
     <item
         android:state_selected="true"
-        android:drawable="@color/blue"
+        android:drawable="@color/Red_color"
         android:icon="@color/primary"
-        android:color="@color/blue"/>
+        android:color="@color/Red_color"/>
     <item
         android:state_selected="false"
         android:drawable="@color/image_color"

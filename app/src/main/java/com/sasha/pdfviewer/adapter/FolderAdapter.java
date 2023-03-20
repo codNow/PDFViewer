@@ -97,13 +97,18 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
                 Dialog dialog = new Dialog(view.getRootView().getContext());
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.side_popup_layout);
-                LinearLayout path_linear, delete_linear, rename_linear;
+                LinearLayout path_linear, delete_linear, folder_path;
+                ImageView flat_icon;
+                TextView flat_text;
 
                 path_linear = dialog.findViewById(R.id.path_linear);
+                flat_icon = dialog.findViewById(R.id.flag_icon);
+                flat_text = dialog.findViewById(R.id.flat_text);
                 delete_linear = dialog.findViewById(R.id.delete_linear);
-                rename_linear = dialog.findViewById(R.id.share_linear);
-                path_linear.setVisibility(View.GONE);
-                rename_linear.setVisibility(View.GONE);
+                folder_path = dialog.findViewById(R.id.share_linear);
+                folder_path.setVisibility(View.GONE);
+                flat_text.setText("Folder");
+                flat_icon.setImageDrawable(context.getDrawable(R.drawable.new_folder2));
 
                 delete_linear.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -113,11 +118,22 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
                         dialog.dismiss();
                     }
                 });
+                path_linear.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(context, PdfListActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("folderName", myFolder);
+                        context.startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });
+
 
 
                 dialog.show();
                 //dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                dialog.getWindow().getAttributes().windowAnimations = R.style.PopupOptionAnimation;
+                //dialog.getWindow().getAttributes().windowAnimations = R.style.PopupOptionAnimation;
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.getWindow().setGravity(Gravity.END);
             }

@@ -50,9 +50,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:orientation="vertical"
                 android:paddingTop="20dp"
-                android:paddingBottom="15dp">
+                android:background="@drawable/small_background2"
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -441,7 +443,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your Folders"
+                android:text="Folders"
                 android:textColor="@color/text_color"
                 android:textSize="20dp"
                 android:textAllCaps="true"
@@ -505,9 +507,7 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_marginStart="10dp"
-                            android:padding="5dp"
-                            android:background="@drawable/rounded_background"
-                            android:src="@drawable/app_logo"/>
+                            android:src="@drawable/na_na"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
@@ -766,6 +766,8 @@
         android:layout_centerVertical="true"
         android:layout_alignParentBottom="true"
         android:background="@color/primaryDark"
+        android:paddingStart="-20dp"
+        android:paddingEnd="-20dp"
         app:itemIconTint="@drawable/selector"
         app:itemPaddingBottom="5dp"
         app:itemTextColor="@drawable/selector"

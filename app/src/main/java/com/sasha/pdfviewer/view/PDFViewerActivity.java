@@ -283,7 +283,7 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
     public void onBackPressed() {
         super.onBackPressed();
         //refresh();
-        startActivity(new Intent(PDFViewerActivity.this, PagingActivity.class));
+        startActivity(new Intent(PDFViewerActivity.this, AllPdfFileViewActivity.class));
     }
 
     private void refresh() {

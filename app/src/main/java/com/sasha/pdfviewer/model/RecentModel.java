@@ -9,17 +9,20 @@ public class RecentModel {
     private String pdfPath;
     private String pdfSize;
     private String pdfDate;
+    private boolean isSelected;
+
 
 
     public RecentModel() {
     }
 
-    public RecentModel(String pdfId, String pdfTitle, String pdfPath, String pdfSize, String pdfDate) {
+    public RecentModel(String pdfId, String pdfTitle, String pdfPath, String pdfSize, String pdfDate, boolean isSelected) {
         this.pdfId = pdfId;
         this.pdfTitle = pdfTitle;
         this.pdfPath = pdfPath;
         this.pdfSize = pdfSize;
         this.pdfDate = pdfDate;
+        this.isSelected = isSelected;
     }
 
     public String getPdfId() {
@@ -60,5 +63,13 @@ public class RecentModel {
 
     public void setPdfDate(String pdfDate) {
         this.pdfDate = pdfDate;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

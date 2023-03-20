@@ -243,7 +243,7 @@ public class WordFolderActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(WordFolderActivity.this, SearchActivity.class));
+
     }
 
 

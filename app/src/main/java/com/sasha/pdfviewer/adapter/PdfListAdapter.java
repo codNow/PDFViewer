@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -38,6 +39,7 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.view.AllPdfFileViewActivity;
+import com.sasha.pdfviewer.view.PDFViewerActivity;
 import com.sasha.pdfviewer.view.PdfListActivity;
 import com.sasha.pdfviewer.view.PdfViewActivity;
 
@@ -53,21 +55,48 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
     private ArrayList<PdfModel> pdfModels;
     private ArrayList<String> pdfPathList;
     private PdfListActivity pdfListActivity;
+    OnItemClicks onItemClicks;
+    OnFileLongClick onFileLongClick;
+    public boolean selectMode = false;
 
 
-    public PdfListAdapter(Context context, ArrayList<PdfModel> pdfModels, ArrayList<String> pdfPathList) {
+    public PdfListAdapter(Context context, ArrayList<PdfModel> pdfModels,
+                          ArrayList<String> pdfPathList, OnItemClicks onItemClicks,
+                          OnFileLongClick onFileLongClick) {
         this.context = context;
         this.pdfModels = pdfModels;
         this.pdfPathList = pdfPathList;
-
+        this.onItemClicks = onItemClicks;
+        this.onFileLongClick = onFileLongClick;
 
     }
+    public void enterSelectMode(){
+        selectMode = true;
+        notifyDataSetChanged();
+    }
+    public void exitSelectMode() {
+        selectMode = false;
+        for (PdfModel recentModel : pdfModels) {
+            recentModel.setSelected(false);
+        }
+        pdfModels.clear();
+        notifyDataSetChanged();
+    }
+
+    public boolean isSelectMode() {
+        return selectMode;
+    }
+    public void setSelectMode(boolean selectMode) {
+        this.selectMode = selectMode;
+    }
+
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.pdf_layout, parent, false);
         return new ViewHolder(view);
+
     }
 
     @Override
@@ -88,6 +117,88 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
         String parentPath = file.getParentFile().getName();
         holder.pdfPath.setText(parentPath);
 
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                modelPdf.setSelected(!modelPdf.isSelected());
+                holder.checkboxImage.setVisibility(View.VISIBLE);
+                holder.option_btn.setVisibility(View.GONE);
+                //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+                enterSelectMode();
+                if (selectMode){
+                    modelPdf.setSelected(!modelPdf.isSelected());
+                    //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+                    holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.option_btn.setVisibility(View.GONE);
+                    if (modelPdf.isSelected()){
+                        modelPdf.setSelected(true);
+                        holder.checkboxImage.setVisibility(View.VISIBLE);
+                        holder.option_btn.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(true);
+                        if (!pdfModels.contains(modelPdf)){
+                            pdfModels.add(modelPdf);
+
+                        }
+                    }
+                }
+                else{
+                    exitSelectMode();
+                    modelPdf.setSelected(false);
+                    holder.checkboxImage.setVisibility(View.GONE);
+                    holder.option_btn.setVisibility(View.GONE);
+                }
+                if (onFileLongClick != null){
+                    onFileLongClick.onFileLongClick(position);
+                }
+                return true;
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (selectMode){
+                    modelPdf.setSelected(!modelPdf.isSelected());
+                    holder.checkboxImage.setVisibility(View.VISIBLE);
+                    //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+                    if (modelPdf.isSelected()){
+                        modelPdf.setSelected(true);
+                        holder.checkboxImage.setVisibility(View.VISIBLE);
+                        holder.option_btn.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(true);
+                        if (!pdfModels.contains(modelPdf)){
+                            pdfModels.add(modelPdf);
+
+                        }
+                    }
+                    else{
+                        holder.checkboxImage.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(false);
+                        holder.option_btn.setVisibility(View.VISIBLE);
+                        //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
+                    }
+                    if (onItemClicks != null){
+                        onItemClicks.onItemClick(modelPdf, position);
+                    }
+
+                }
+                else{
+                    exitSelectMode();
+                    Intent intent = new Intent(context, PdfViewActivity.class);
+                    intent.putExtra("title", modelPdf.getTitle());
+                    intent.putExtra("path", modelPdf.getPath().toString());
+                    context.startActivity(intent);
+                }
+            }
+        });
+        if (modelPdf.isSelected()){
+            holder.checkboxImage.setVisibility(View.VISIBLE);
+            holder.option_btn.setVisibility(View.GONE);
+        }
+        else{
+            holder.checkboxImage.setVisibility(View.GONE);
+            holder.option_btn.setVisibility(View.VISIBLE);
+        }
+
 
        /* try {
             new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
@@ -100,7 +211,6 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 LinearLayout delete_linear, rename_linear, share_linear;
-
                 final Dialog dialog = new Dialog(v.getRootView().getContext());
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.side_popup_layout);
@@ -174,11 +284,11 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
         final EditText editText = dialog.findViewById(R.id.rename_text);
         Button cancel = dialog.findViewById(R.id.cancel_button);
         Button rename_btn = dialog.findViewById(R.id.save_button);
-        final File renameFile = new File(pdfModels.get(position).getTitle());
+    /*    final File renameFile = new File(pdfModels.get(position).getTitle());
         String nameText = renameFile.getName();
         nameText = nameText.substring(0, nameText.lastIndexOf("."));
         editText.setText(nameText);
-        editText.clearFocus();
+        editText.clearFocus();*/
         dialog.getWindow().setSoftInputMode(WindowManager.
                 LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         cancel.setOnClickListener(v -> {
@@ -188,8 +298,8 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
             Dialog progressDialog = new Dialog(view.getRootView().getContext());
             progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             progressDialog.setContentView(R.layout.progress_dialog);
-            progressDialog.setCanceledOnTouchOutside(false);
             TextView textView = progressDialog.findViewById(R.id.loading_text);
+            progressDialog.setCanceledOnTouchOutside(false);
             textView.setText(R.string.rename_progress);
             progressDialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
             progressDialog.show();
@@ -202,17 +312,16 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
                     progressDialog.dismiss();
                     try{
                         String newName = editText.getText().toString();
-                        String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RenameFiles/"+newName;
-                        File dir = new File(dest);
-                        if (!dir.getParentFile().exists()){
-                            dir.getParentFile().mkdir();
-                        }
                         String paths = pdfModels.get(position).getTitle();
                         File sourceFile = new File(paths);
+                        File parentDir = sourceFile.getParentFile(); // get the directory of the current file
+                        String fileExtension = ".pdf"; // change this to the file extension you want
+                        String newFileName = newName + fileExtension;
+                        String newPath = parentDir.getAbsolutePath() + File.separator + newFileName;
                         File file = new File(String.valueOf(sourceFile));
                         String filename = file.getName();
                         FileInputStream in = new FileInputStream(sourceFile);
-                        FileOutputStream out = new FileOutputStream(dest+".pdf");
+                        FileOutputStream out = new FileOutputStream(newPath);
 
                         byte[] buffer = new byte[1024];
                         int read;
@@ -227,7 +336,7 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
                             pdfModels.remove(position);
                             notifyItemChanged(position);
                             notifyDataSetChanged();
-                            successPopup(dest, newName, view, position);
+                            successPopup(newPath, newName, view, position);
                         }
 
                     }
@@ -294,16 +403,17 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
         Toast.makeText(context, "loading..", Toast.LENGTH_SHORT).show();
     }
     private void deleteFile(int position, View view){
-        final TextView textTile, textMessage;
-        final Button yesButton, noButton;
-        final ImageView close_button;
-
         Dialog alertDialog = new Dialog(view.getRootView().getContext());
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         alertDialog.setContentView(R.layout.delete_layout);
 
+        final TextView textTile, textMessage;
+        final Button yesButton, noButton;
+        final ImageView close_button;
+
         textTile = alertDialog.findViewById(R.id.textTitle);
         textMessage = alertDialog.findViewById(R.id.textMessage);
+        textMessage.setText(R.string.are_you_sure);
         yesButton = alertDialog.findViewById(R.id.buttonYes);
         noButton = alertDialog.findViewById(R.id.buttonNo);
         close_button = alertDialog.findViewById(R.id.close_btn);
@@ -312,7 +422,7 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Files.getContentUri("external"),
                         Long.parseLong(pdfModels.get(position).getId()));
                 File file = new File(pdfModels.get(position).getTitle());
                 boolean deleted = file.delete();
@@ -323,11 +433,11 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
                     pdfModels.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position,pdfModels.size());
-                    Snackbar.make(view,"File Deleted Success",
+                    Snackbar.make(view, R.string.snake_bar_success,
                             Snackbar.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                 }else {
-                    Snackbar.make(view,"File Deleted Fail",
+                    Snackbar.make(view, R.string.snake_bar_fail,
                             Snackbar.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                 }
@@ -355,7 +465,24 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
 
     }
 
-
+    public ArrayList<PdfModel> getSelectedItems() {
+        ArrayList<PdfModel> selectedModels = new ArrayList<>();
+        for (PdfModel model : pdfModels) {
+            if (model.isSelected()) {
+                selectedModels.add(model);
+            }
+        }
+        return selectedModels;
+    }
+    public int getSelectedPosition() {
+        for (int i = 0; i < pdfModels.size(); i++) {
+            PdfModel pdfModel = pdfModels.get(i);
+            if (pdfModel.isSelected()) {
+                return i;
+            }
+        }
+        return -1;
+    }
     @Override
     public int getItemCount() {
         return pdfModels.size();
@@ -370,7 +497,7 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView pdfTitle, timeStamp, pdfSize, pdfPath;
-        private ImageView option_btn, imageView;
+        private ImageView option_btn, imageView, checkboxImage;
         private PDFView pdfView;
         View view;
         private CheckBox checkBox;
@@ -383,8 +510,15 @@ public class PdfListAdapter extends RecyclerView.Adapter<PdfListAdapter.ViewHold
             option_btn = itemView.findViewById(R.id.option_icon);
             imageView = itemView.findViewById(R.id.imageView);
             checkBox = itemView.findViewById(R.id.recent_checkbox);
+            checkboxImage = itemView.findViewById(R.id.checking);
 
         }
 
+    }
+    public interface OnItemClicks{
+        void onItemClick(PdfModel pdfModel,int Position);
+    }
+    public interface OnFileLongClick{
+        void onFileLongClick(int position);
     }
 }

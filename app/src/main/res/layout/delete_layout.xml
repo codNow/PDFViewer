@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/popup_background"
     android:id="@+id/layoutDialogContainer"
+    android:layout_margin="5dp"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,8 +52,9 @@
             android:id="@+id/second_linear">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:id="@+id/textMessage"
                 android:text="@string/are_your_sure_to_clear_list"
                 android:textStyle="bold"

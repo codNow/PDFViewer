@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/all_folders"
-            android:textColor="@color/text_color"
+            android:textColor="@color/text_color3"
             android:textStyle="bold"
             android:layout_marginEnd="15dp"
             android:textSize="18sp"
@@ -57,8 +57,8 @@
 
                 <ImageView
                     android:id="@+id/all_icon"
-                    android:layout_width="39dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:src="@drawable/all_file_folder" />
 
                 <LinearLayout
@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/all_files"
                         android:fontFamily="@font/josefont"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/blue"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="10dp"
                         android:textStyle="bold"
@@ -84,7 +84,7 @@
                         android:layout_marginStart="10dp"
                         android:fontFamily="@font/josefont"
                         android:textSize="15sp"
-                        android:textColor="@color/text_color2"/>
+                        android:textColor="@color/accent"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -173,6 +173,8 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_alignParentBottom="true"
         android:background="@color/primaryDark"
+        android:paddingStart="-20dp"
+        android:paddingEnd="-20dp"
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:itemIconSize="32dp"

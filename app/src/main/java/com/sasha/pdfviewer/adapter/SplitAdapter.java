@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -73,6 +74,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
             public void onClick(View view) {
                 if (EncryptDecrypt.isLockable(file)){
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.option_btn.setVisibility(View.GONE);
                     final Dialog dialog = new Dialog(view.getRootView().getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setContentView(R.layout.question_dialog);
@@ -90,6 +92,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
                         public void onClick(View v) {
                             dialog.dismiss();
                             holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
                         }
                     });
                     okBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +111,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
                     dialog.getWindow().setGravity(Gravity.END);
                 }
                 else {
-                    Toast.makeText(context, "This file is protected !", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, R.string.file_lock_info, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });

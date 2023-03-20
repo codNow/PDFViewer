@@ -462,9 +462,9 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        //startActivity(new Intent(PdfViewActivity.this, SearchActivity.class));
+        /*super.onBackPressed();
+        */
+        startActivity(new Intent(PdfViewActivity.this, SearchActivity.class));
     }
 
     @Override

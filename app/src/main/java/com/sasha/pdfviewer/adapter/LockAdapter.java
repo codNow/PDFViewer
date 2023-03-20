@@ -54,7 +54,7 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
     @NonNull
     @Override
     public LockAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.all_list_layout, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.pdf_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -80,10 +80,10 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
                 
                 if (EncryptDecrypt.isLockable(file)){
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.option_btn.setVisibility(View.GONE);
                     final Dialog dialog = new Dialog(view.getRootView().getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setContentView(R.layout.dialog_popup_layout);
-
                     EditText editText;
                     Button cancelBtn, okBtn;
                     TextView question_text, textViewTitle, textMessage;
@@ -101,6 +101,7 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
                         public void onClick(View v) {
                             dialog.dismiss();
                             holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
                         }
                     });
                     okBtn.setOnClickListener(new View.OnClickListener() {
@@ -251,11 +252,10 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
             super(itemView);
 
             pdfTitle = itemView.findViewById(R.id.pdfName);
-            pdfPath = itemView.findViewById(R.id.file_path);
+            pdfPath = itemView.findViewById(R.id.pdfPath);
             pdfSize = itemView.findViewById(R.id.pdfSize);
             option_btn = itemView.findViewById(R.id.option_icon);
-            checkboxImage = itemView.findViewById(R.id.image_checkbox);
-            imageView = itemView.findViewById(R.id.pdfImage);
+            imageView = itemView.findViewById(R.id.imageView);
             checkboxImage = itemView.findViewById(R.id.checking);
 
         }

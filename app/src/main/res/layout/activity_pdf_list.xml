@@ -47,7 +47,8 @@
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="2dp"
                     android:background="@color/transparent"
-                    android:src="@drawable/search_icon3"/>
+                    android:src="@drawable/search_icon3"
+                    app:tint="@color/Red_color" />
 
 
                 <EditText
@@ -114,7 +115,7 @@
                 android:id="@+id/chose_backBtn"
                 android:layout_gravity="start"
                 android:layout_marginEnd="15dp"
-                app:tint="@color/image_color" />
+                app:tint="@color/blue" />
 
             <TextView
                 android:layout_width="0dp"
@@ -125,7 +126,7 @@
                 android:textSize="16sp"
                 android:textAlignment="center"
                 android:fontFamily="@font/josefont"
-                android:textColor="@color/text_color3"
+                android:textColor="@color/purple_700"
                 android:id="@+id/selectedText"/>
 
             <LinearLayout
@@ -137,18 +138,27 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_marginEnd="25dp"
+                    android:layout_marginEnd="15dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_baseline_delete_24"
                     android:id="@+id/delete_items"
-                    app:tint="@color/blue" />
+                    app:tint="@color/Red_color" />
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:layout_marginEnd="15dp"
                     android:src="@drawable/share_icon"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/share_items"
                     app:tint="@color/blue" />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/select_all_icon"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/select_items"
+                    app:tint="@color/purple_500" />
             </LinearLayout>
 
 
@@ -158,9 +168,10 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
         app:layout_constraintTop_toBottomOf="@id/upper_layout">
 
-        <androidx.core.widget.NestedScrollView
+        <!--<androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -169,16 +180,17 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/upper_layout"
                 android:orientation="vertical">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/recyclerView"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginStart="15dp"/>
+
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recyclerView"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="10dp"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <ProgressBar

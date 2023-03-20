@@ -1,6 +1,5 @@
 package com.sasha.pdfviewer.view;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
@@ -11,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
@@ -22,12 +22,14 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,19 +37,18 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +56,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.RecentAdapter;
-import com.sasha.pdfviewer.folderList.WaterMarkActivity;
-import com.sasha.pdfviewer.folderList.WordFolderActivity;
-import com.sasha.pdfviewer.model.PdfModel;
+import com.sasha.pdfviewer.tools.CombineActivity;
 import com.sasha.pdfviewer.model.RecentModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.RealPathUtil;
@@ -67,11 +66,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements View.OnLongClickListener {
+public class MainActivity extends AppCompatActivity implements RecentAdapter.OnItemClicks, RecentAdapter.OnFileLongClick {
 
     private BottomNavigationView bottomNavigationView;
 
@@ -84,18 +80,18 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private ProgressBar progressBar;
     private RecentAdapter pdfAdapter;
     private Toolbar toolbar;
-    int count = 0;
+    private int count = 0;
     private TextView app_name, selectedText, recent_first;
-    public static boolean isContextTualModeEnabled = false;
     private ImageView notification, app_logo, delete_items, shareItems;
-    ArrayList<RecentModel> selectList = new ArrayList<>();
-    LinearLayout recent_linear, chose_linear;
-    TextView selectTextView;
-    ArrayList<Uri> uris = new ArrayList<>();
+    private ArrayList<RecentModel> selectList = new ArrayList<>();
+    private LinearLayout recent_linear, chose_linear;
+    private TextView selectTextView;
+    private ArrayList<Uri> uris = new ArrayList<>();
     private boolean doubleBackPressed = false;
     private final static String READ_EXTERNAL_STORAGE =
             "android.permission.READ_EXTERNAL_STORAGE";
     private int STORAGE_PERMISSION_CODE = 101;
+    private int REQUEST_CODE = 105;
     private ArrayList<RecentModel> recentList = new ArrayList<>();
     private RelativeLayout main_page;
     private CoordinatorLayout coordinatorLayout;
@@ -107,14 +103,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     private ImageView app_logos, chose_backBtn;
     static boolean stackAndTrackingEnabled = false;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
+    private LinearLayout permission_layout;
+    private Button permission_button;
+    private boolean isSelectAll = false;
+    private ImageView selectBtn;
+    public static boolean isSelectMode;
+    private Switch theme_switch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
+        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+        //getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this,R.color.white));// set status background white
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         new_file = findViewById(R.id.new_file);
@@ -137,20 +138,68 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         toolbar = findViewById(R.id.toolbar);
         main_page = findViewById(R.id.home_page);
         chose_backBtn = findViewById(R.id.chose_backBtn);
+        selectBtn = findViewById(R.id.select_items);
+        permission_button = findViewById(R.id.permission_button);
+        permission_layout = findViewById(R.id.permission_layout);
+        theme_switch = findViewById(R.id.theme_switch);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        verifyStoragePermission(this);
-        isStoragePermissionGranted();
+        /*verifyStoragePermission(this);
+        isStoragePermissionGranted();*/
+        checkStoragePermission();
+        buttonListener();
+
+        SharedPreferences preferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
+        boolean isDarkMode = preferences.getBoolean("DARK", false);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        if (isDarkMode){
+            theme_switch.setChecked(true);
+        }
+
+        /*int currentNightMode = getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+            theme_switch.setChecked(true);
+        } else {
+            theme_switch.setChecked(false);
+        }*/
+        theme_switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isDarkMode){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    editor.putBoolean("DARK", false);
+
+                }
+                else{
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    editor.putBoolean("DARK", true);
+                }
+                editor.apply();
+            }
+        });
+
+        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (isDarkMode){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                else{
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+            }
+        });
 
         new_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //getPdfFile();
-                startActivity(new Intent(MainActivity.this, WaterMarkActivity.class));
+                startActivity(new Intent(MainActivity.this, CombineActivity.class));
             }
         });
-
         showBottom();
         recentNote();
         chose_backBtn.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +256,174 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             }
         });
     }
+
+
+    private void buttonListener() {
+        selectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isSelectAll) {
+                    //ArrayList<PdfModel> selectedFile = multiSelectAdapter.getSelectedItems();
+                    selectAll();
+                    //After checking all items change button text
+                    selectBtn.setImageDrawable(getDrawable(R.drawable.deselect_all_icon));
+                    isSelectAll = true;
+                    pdfAdapter.notifyDataSetChanged();
+                    if (isSelectAll){
+                        int countAll = modelPdfs.size();
+                        selectedText.setText(String.valueOf(countAll));
+                        updateCount(countAll);
+                    }
+
+                } else {
+                    //If button text is Deselect All remove check from all items
+                    //multiSelectAdapter.removeSelection();
+                    deselectAll();
+                    isSelectAll = false;
+                    if (!isSelectAll){
+                        selectedText.setText("Select File");
+                        updateCount(count);
+                    }
+                    //After checking all items change button text
+                    selectBtn.setImageDrawable(getDrawable(R.drawable.select_all_icon));
+                    pdfAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        shareItems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<RecentModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+                for (RecentModel pdfModel : selectedFilePaths) {
+                    String filePath = pdfModel.getPdfPath();
+                    String id = pdfModel.getPdfId();
+                    File file = new File(filePath);
+                    uris.add(Uri.parse(filePath));
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("application/pdf");
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(Intent.createChooser(intent, "Share"));
+                }
+
+            }
+        });
+
+        delete_items.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (count > 0) {
+                    Dialog alertDialog = new Dialog(view.getRootView().getContext());
+                    alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    alertDialog.setContentView(R.layout.delete_layout);
+                    final TextView textTile, textMessage;
+                    final Button yesButton, noButton;
+                    final ImageView close_button;
+
+                    textTile = alertDialog.findViewById(R.id.textTitle);
+                    textMessage = alertDialog.findViewById(R.id.textMessage);
+                    yesButton = alertDialog.findViewById(R.id.buttonYes);
+                    noButton = alertDialog.findViewById(R.id.buttonNo);
+                    close_button = alertDialog.findViewById(R.id.close_btn);
+
+                    textTile.setText(R.string.delete_file_title);
+                    textMessage.setText(R.string.delete_question);
+                    yesButton.setText(R.string.yes);
+                    noButton.setText(R.string.no);
+                    yesButton.setOnClickListener(new View.OnClickListener() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void onClick(View v) {
+                            int position = pdfAdapter.getSelectedPosition();
+                            ArrayList<RecentModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+                            for (RecentModel pdfModel : selectedFilePaths) {
+                                String filePath = pdfModel.getPdfPath();
+                                String id = pdfModel.getPdfId();
+                                File file = new File(filePath);
+                                if (file.exists()) {
+                                    file.delete();
+                                    selectedFilePaths.remove(file);
+                       /* Uri contentUris = ContentUris.withAppendedId(
+                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                                Long.parseLong(id));
+                        getApplicationContext().getContentResolver().delete(
+                                contentUris, null, null
+                        );*/
+                                    modelPdfs.remove(position);
+                                    recyclerView.getAdapter().notifyItemRemoved(position);
+                                    count = 0;
+                                    updateCount(count);
+
+                                }
+
+                            }
+                            alertDialog.dismiss();
+                        }
+                    });
+                    noButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    close_button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    alertDialog.show();
+                    alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    alertDialog.getWindow().getAttributes().windowAnimations
+                            = R.style.SideMenuAnimation;
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.getWindow().setGravity(Gravity.END);
+                }
+                else{
+                    Toast.makeText(MainActivity.this, R.string.select_request, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    private void checkStoragePermission() {
+        if (SDK_INT >= Build.VERSION_CODES.R){
+            askPermissionBuildR();
+        }
+        else{
+            isStoragePermissionGranted();
+        }
+
+    }
+
+    private void askPermissionBuildR() {
+        int permission = ActivityCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager() && permission != PackageManager.PERMISSION_GRANTED){
+                /*ActivityCompat.requestPermissions(
+                        this,
+                        PERMISSION_STORAGE,
+                        REQUEST_EXTERNAL_STORAGE);*/
+                permission_layout.setVisibility(View.VISIBLE);
+                permission_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.setAction(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                        permission_layout.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }
+    }
+
     public  boolean isStoragePermissionGranted() {
         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -232,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 public void run() {
                     recent_first.setVisibility(View.GONE);
                 }
-            }, 4000);
+            }, 10000);
             SharedPreferences preferences = getSharedPreferences("MyPres", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("showNote", false);
@@ -245,21 +462,24 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
     }
 
 
+
     //Permissions Check
     public void verifyStoragePermission(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity, WRITE_EXTERNAL_STORAGE);
 
-       /* if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                + ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]
-                    {READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-            ActivityCompat.requestPermissions(this, new String[]
-                    {WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        if (SDK_INT == Build.VERSION_CODES.P){
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    + ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]
+                        {READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                ActivityCompat.requestPermissions(this, new String[]
+                        {WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
 
-        }*/
+            }
+        }
 
         // Surrounded with if statement for Android R to get access of complete file.
         if (SDK_INT >= Build.VERSION_CODES.R) {
@@ -269,12 +489,14 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                         PERMISSION_STORAGE,
                         REQUEST_EXTERNAL_STORAGE);
 
+
                 // Abruptly we will ask for permission once the application is launched for sake demo.
                 Intent intent = new Intent();
                 intent.setAction(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 Uri uri = Uri.fromParts("package", this.getPackageName(), null);
                 intent.setData(uri);
                 startActivity(intent);
+                Toast.makeText(activity, "Enable Permission to use this App", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -341,6 +563,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         alertDialog.getWindow().getAttributes().windowAnimations
                 = R.style.SideMenuAnimation;
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.getWindow().setGravity(Gravity.END);
 
     }
@@ -413,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         });
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+/*    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public boolean onLongClick(View v) {
         isContextTualModeEnabled = true;
@@ -422,162 +645,34 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         if (isContextTualModeEnabled){
             recent_linear.setVisibility(View.GONE);
             chose_linear.setVisibility(View.VISIBLE);
+            bottomNavigationView.setVisibility(View.GONE);
         }
         else{
             recent_linear.setVisibility(View.VISIBLE);
             chose_linear.setVisibility(View.GONE);
+            bottomNavigationView.setVisibility(View.VISIBLE);
         }
         return true;
-    }
+    }*/
 
-    public void MakeSelection(View v, int position) {
-        if (((CheckBox)v).isChecked()){
-            selectList.add(modelPdfs.get(position));
-            count = count +1;
-            updateCount(count);
-        }
-        else{
-            selectList.remove(modelPdfs.get(position));
-            count = count - 1;
-            updateCount(count);
-        }
-
-        delete_items.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog alertDialog = new Dialog(view.getRootView().getContext());
-                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                alertDialog.setContentView(R.layout.delete_layout);
-                final TextView textTile, textMessage;
-                final Button yesButton, noButton;
-                final ImageView close_button;
-
-                textTile = alertDialog.findViewById(R.id.textTitle);
-                textMessage = alertDialog.findViewById(R.id.textMessage);
-                yesButton = alertDialog.findViewById(R.id.buttonYes);
-                noButton = alertDialog.findViewById(R.id.buttonNo);
-                close_button = alertDialog.findViewById(R.id.close_btn);
-
-                textTile.setText("Clear Recent");
-                textMessage.setText("Are You Sure To Clear?");
-                yesButton.setText("Yes");
-                noButton.setText("No");
-                yesButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (selectList.size() > 0){
-                            try {
-                                Thread thread = new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        boolean isDeleted = selectedFile(selectList, true);
-                                        runOnUiThread(new Runnable() {
-                                            @SuppressLint("NotifyDataSetChanged")
-                                            @Override
-                                            public void run() {
-                                                if (isDeleted){
-                                                    RemoveContextualActionMode();
-                                                    pdfAdapter.notifyDataSetChanged();
-                                                    startActivity(getIntent());
-                                                    //Toast.makeText(getApplicationContext(), selectList.size() + "Deleted success", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-                                thread.start();
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                noButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.dismiss();
-                    }
-                });
-
-                close_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.dismiss();
-                    }
-                });
-
-                alertDialog.show();
-                alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                alertDialog.getWindow().getAttributes().windowAnimations
-                        = R.style.SideMenuAnimation;
-                alertDialog.getWindow().setGravity(Gravity.END);
-
-            }
-        });
-
-        shareItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < selectList.size(); i++){
-                    String id = selectList.get(i).getPdfId();
-                    String path = selectList.get(i).getPdfPath();
-                    uris.add(Uri.parse(path));
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType("application/pdf");
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(Intent.createChooser(intent, "Share"));
-
-                }
-            }
-        });
-    }
-    private boolean selectedFile(ArrayList<RecentModel> list, boolean canDelete){
-        for (int i = 0; i < list.size(); i++){
-            String id = list.get(i).getPdfId();
-            String path = list.get(i).getPdfPath();
-            uris.add(Uri.parse(path));
-            File files = new File(path);
-            files.delete();
-            list.remove(files);
-            if (canDelete){
-                /*Uri contentUris = ContentUris.withAppendedId(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                        Long.parseLong(id)
-                );*/
-                File file = new File(path);
-                boolean isDeleted = file.delete();
-                list.remove(file);
-                /*if (isDeleted){
-                    getApplicationContext().getContentResolver().delete(
-                            contentUris, null, null
-                    );
-                }*/
-            }
-        }
-        return true;
-    }
     private void updateCount(int counts) {
         if (counts == 0){
-            selectTextView.setText("Select");
+            selectTextView.setText("Select File");
         }
         else {
             selectTextView.setText(counts + " Selected");
         }
     }
 
-
-    @Override
+  /*  @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         int id = item.getItemId();
         switch (id){
             case R.id.profile_menu:
                 startActivity(new Intent(this, ProfileActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     protected void onResume() {
@@ -585,11 +680,12 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         ArrayList<String> pdfPathList = new ArrayList<>();
         modelPdfs.clear();
 
-        pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, MainActivity.this);
+        pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, MainActivity.this, this);
         recyclerView.setAdapter(pdfAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this,
                 RecyclerView.VERTICAL, false));
         pdfAdapter.notifyDataSetChanged();
+        isSelectMode = pdfAdapter.isSelectMode();
 
         RecentModel item ;
         String file_ext = ".pdf";
@@ -611,6 +707,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
                         item.setPdfPath(pdf_file.getAbsolutePath());
                         item.setPdfDate(String.valueOf(pdf_file.lastModified()));
                         item.setPdfSize(convertSize(pdf_file.length()));
+
 
                         modelPdfs.add(item);
                         pdfAdapter.notifyDataSetChanged();
@@ -641,34 +738,98 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
         }
 
     }
+    private void selectAll() {
+        for (RecentModel item : modelPdfs) {
+            item.setSelected(true);
+            if (item.isSelected()){
+                count = count + 1;
+                updateCount(count);
+            }
+        }
+        pdfAdapter.notifyDataSetChanged();
+    }
+    private void deselectAll() {
+        for (RecentModel item : modelPdfs) {
+            item.setSelected(false);
+            if (!item.isSelected()){
+                count = 0;
+                updateCount(count);
+            }
+        }
+        pdfAdapter.notifyDataSetChanged();
+    }
+    private void refresh(){
+        isSelectMode = false;
+        startActivity(getIntent());
+    }
 
     private void RemoveContextualActionMode() {
-        isContextTualModeEnabled = false;
+        isSelectMode = false;
         count = 0;
+        updateCount(count);
         selectList.clear();
         pdfAdapter.notifyDataSetChanged();
         new_file.setVisibility(View.VISIBLE);
         chose_linear.setVisibility(View.GONE);
-
+        recent_linear.setVisibility(View.VISIBLE);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        deselectAll();
 
     }
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
-    }
+    }*/
 
     @Override
     protected void onPause() {
         super.onPause();
     }
-    public static boolean isEnabled() {
-        return stackAndTrackingEnabled;
 
+
+
+    @Override
+    public void onItemClick(RecentModel recentModel, int Position) {
+        if (recentModel.isSelected()){
+            count = count + 1;
+            updateCount(count);
+        }
+        else if (!recentModel.isSelected()){
+            count = count - 1;
+            updateCount(count);
+        }
+        else {
+            count = 0;
+            updateCount(count);
+        }
     }
 
 
+    @Override
+    public void onFileLongClick(int position) {
+        isSelectMode = true;
+        if (isSelectMode){
+            new_file.setVisibility(View.GONE);
+            recent_linear.setVisibility(View.GONE);
+            chose_linear.setVisibility(View.VISIBLE);
+            bottomNavigationView.setVisibility(View.GONE);
+            RecentModel recentModel = modelPdfs.get(position);
+            recentModel.setSelected(!recentModel.isSelected());
+            if (recentModel.isSelected()){
+                count = count + 1;
+                updateCount(count);
+            }
+        }
+        else {
+            isSelectMode = false;
+            new_file.setVisibility(View.VISIBLE);
+            recent_linear.setVisibility(View.VISIBLE);
+            chose_linear.setVisibility(View.GONE);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
@@ -682,25 +843,28 @@ public class MainActivity extends AppCompatActivity implements View.OnLongClickL
             finish();*/
             finishAffinity();
 
-
         }
         else {
+            if (pdfAdapter.isSelectMode()){
+                pdfAdapter.setSelectMode(false);
+            }
             this.doubleBackPressed = true;
             RemoveContextualActionMode();
             new_file.setVisibility(View.VISIBLE);
             chose_linear.setVisibility(View.GONE);
-
+            count = 0;
+            updateCount(count);
 
         }
         new Handler(Looper.getMainLooper())
                 .postDelayed(new Runnable() {
 
-            @Override
-            public void run() {
-                doubleBackPressed = false;
+                    @Override
+                    public void run() {
+                        doubleBackPressed = false;
 
-            }
-        }, 2000);
+                    }
+                }, 2000);
 
     }
 }

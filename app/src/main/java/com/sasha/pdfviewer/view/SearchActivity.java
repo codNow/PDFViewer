@@ -1,7 +1,5 @@
 package com.sasha.pdfviewer.view;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -10,23 +8,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,11 +31,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.FolderAdapter;
-import com.sasha.pdfviewer.folderList.ExtractedImagesFolderActivity;
-import com.sasha.pdfviewer.folderList.WaterMarkActivity;
-import com.sasha.pdfviewer.folderList.WordFolderActivity;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.model.RecentModel;
+import com.sasha.pdfviewer.tools.CombineActivity;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.RealPathUtil;
 
@@ -97,14 +87,14 @@ public class SearchActivity extends AppCompatActivity{
         all_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SearchActivity.this, PagingActivity.class));
+                startActivity(new Intent(SearchActivity.this, AllPdfFileViewActivity.class));
             }
         });
 
         new_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SearchActivity.this, AllPdfFileViewActivity.class));
+                startActivity(new Intent(SearchActivity.this, CombineActivity.class));
             }
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

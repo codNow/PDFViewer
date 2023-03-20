@@ -118,4 +118,17 @@
     <string name="images_progress">Converting Images.....</string>
     <string name="delete_file_title">Delete File</string>
     <string name="delete_question">Are You Sure ?</string>
+    <string name="select_all">select all</string>
+    <string name="deselect_all">deselect all</string>
+    <string name="file_lock_info">This PDF file is protected. Please unlock it first</string>
+    <string name="select_request">Please select at least one</string>
+    <string name="snake_bar_success">File Deleted Success</string>
+    <string name="snake_bar_fail">File Deleted Fail</string>
+    <string name="are_you_sure">Are you sure to Delete this file</string>
+    <string name="welcome_notes">Welcome to our PDF reader and tools,\n enjoy the features!</string>
+    <string name="combine_success">Pdf Combined Successfully !!</string>
+    <string name="combine_question">Do you want to combine more ?</string>
+    <string name="select_file">Select File</string>
+    <string name="choose_atliest">Choose atleast one file</string>
+    <string name="combine">Combine</string>
 </resources>

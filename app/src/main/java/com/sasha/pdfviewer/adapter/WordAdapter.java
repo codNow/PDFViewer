@@ -30,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
@@ -48,7 +49,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
         this.context = context;
         this.modelArrayList = modelArrayList;
 
-        SharedPreferences prefs = context.getSharedPreferences("MyPres", Context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences("WordPres", Context.MODE_PRIVATE);
         showNote = prefs.getBoolean("showNote", true);
     }
 
@@ -79,6 +80,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                 if (PdfUtils.isFileNotLock(file)) {
                     if (PdfUtils.isConvertibleToText(modelPdf.getPath())) {
                         holder.checkboxImage.setVisibility(View.VISIBLE);
+                        holder.option_btn.setVisibility(View.GONE);
                         final Dialog dialog = new Dialog(view.getRootView().getContext());
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(R.layout.question_dialog);
@@ -97,6 +99,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                         cancelBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                holder.checkboxImage.setVisibility(View.GONE);
+                                holder.option_btn.setVisibility(View.VISIBLE);
                                 dialog.dismiss();
                             }
                         });
@@ -123,7 +127,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                         Toast.makeText(context, R.string.file_not_covertible, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(context, R.string.already_locked, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(view, R.string.file_lock_info, Snackbar.LENGTH_SHORT).show();
                 }
 
             }
@@ -143,8 +147,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                 public void run() {
                     holder.convertNote.setVisibility(View.GONE);
                 }
-            }, 4000);
-            SharedPreferences prefs = context.getSharedPreferences("MyPres", Context.MODE_PRIVATE);
+            }, 8000);
+            SharedPreferences prefs = context.getSharedPreferences("WordPres", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("showNote", false);
             editor.apply();

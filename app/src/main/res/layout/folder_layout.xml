@@ -16,7 +16,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/folder_icon2"
+            android:src="@drawable/new_folder2"
             />
 
         <LinearLayout
@@ -37,7 +37,7 @@
                 android:textSize="16sp"
                 android:maxLines="1"
                 android:textStyle="bold"
-                android:textColor="@color/text_color"
+                android:textColor="@color/text_color3"
                 android:fontFamily="@font/josefont"
                 android:id="@+id/folderName"/>
 
@@ -46,6 +46,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_baseline_insert_drive_file_24"
+                    android:id="@+id/file_imageView"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -55,14 +60,13 @@
                     android:fontFamily="@font/josefont"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textColor="@color/text_color2"
+                    android:textColor="@color/accent"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:id="@+id/no_file"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:textStyle="bold"
                     android:layout_marginStart="15dp"
                     android:id="@+id/pdf_path"/>
@@ -78,7 +82,7 @@
             android:src="@drawable/ic_baseline_arrow_forward_ios_24"
             android:layout_marginEnd="40dp"
             android:id="@+id/menu_option"
-            />
+            app:tint="@color/purple_500" />
 
     </LinearLayout>
 

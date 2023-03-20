@@ -189,7 +189,7 @@
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/button_background3"
+            android:background="@drawable/button_background4"
             android:orientation="horizontal">
 
             <ImageView
@@ -203,7 +203,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/register_with_pdfview"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color4"
                 android:fontFamily="@font/montserrat"
                 android:textStyle="bold"
                 android:layout_marginStart="15dp"
@@ -259,24 +259,5 @@
         app:tint="@color/white" />
 
 
-
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_alignParentBottom="true"
-        android:background="@color/primaryDark"
-        app:itemIconTint="@drawable/selector"
-        app:itemTextColor="@drawable/selector"
-        app:itemIconSize="32dp"
-        app:itemPaddingBottom="5dp"
-        app:itemTextAppearanceActive="@style/navDrawerTextStyleActive"
-        app:itemTextAppearanceInactive="@style/navDrawerTextStyleDeActive"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation_view"
-        android:id="@+id/bottom_navigation"/>
 
 </RelativeLayout>

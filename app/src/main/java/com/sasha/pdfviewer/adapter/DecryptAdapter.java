@@ -77,10 +77,11 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.option_btn.setVisibility(View.GONE);
+                holder.checkboxImage.setVisibility(View.VISIBLE);
                 final Dialog dialog = new Dialog(view.getRootView().getContext());
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.password_layout);
-
                 EditText editText;
                 Button cancelBtn, okBtn;
                 TextView question_text, textViewTitle, titleText;
@@ -95,6 +96,8 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        holder.checkboxImage.setVisibility(View.GONE);
+                        holder.option_btn.setVisibility(View.VISIBLE);
                     }
                 });
                 okBtn.setOnClickListener(new View.OnClickListener() {

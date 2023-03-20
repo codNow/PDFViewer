@@ -94,13 +94,14 @@
         android:layout_below="@id/toolbar"
         android:id="@+id/pdfView" />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:indeterminate="true"
-        android:indeterminateTint="@color/blue"
-        android:id="@+id/progressbar"/>
+        android:visibility="gone"
+        app:indicatorColor="#FF5722"
+        app:trackColor="#03A9F4" />
 
 </RelativeLayout>
