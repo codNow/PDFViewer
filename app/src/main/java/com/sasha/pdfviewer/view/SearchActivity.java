@@ -33,7 +33,7 @@ import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.FolderAdapter;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.model.RecentModel;
-import com.sasha.pdfviewer.tools.CombineActivity;
+import com.sasha.pdfviewer.tools.CameraFolderActivity;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.RealPathUtil;
 
@@ -94,7 +94,7 @@ public class SearchActivity extends AppCompatActivity{
         new_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SearchActivity.this, CombineActivity.class));
+                startActivity(new Intent(SearchActivity.this, CameraFolderActivity.class));
             }
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -229,8 +229,8 @@ public class SearchActivity extends AppCompatActivity{
                         break;
 
                     case R.id.search_menu:
-                         startActivity(getIntent());
-                         break;
+                         return true;
+
                     /*case R.id.profile_menu:
                         startActivity(new Intent(SearchActivity.this, ProfileActivity.class));
                         overridePendingTransition(0, 0);

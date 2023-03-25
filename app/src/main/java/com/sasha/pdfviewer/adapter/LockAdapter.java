@@ -143,10 +143,10 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
         dialog.setContentView(R.layout.progress_dialog);
         dialog.setCanceledOnTouchOutside(false);
         TextView textView = dialog.findViewById(R.id.loading_text);
-        textView.setText("Encrypting File....");
+        textView.setText(R.string.encrypted_dialog);
         dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
         File destiny = new File(Environment.getExternalStorageDirectory() +
-                "/EncryptedFiles/" + title);
+                "/Locked Folder/" + title);
 
         if (!destiny.getParentFile().exists()){
             destiny.getParentFile().mkdir();

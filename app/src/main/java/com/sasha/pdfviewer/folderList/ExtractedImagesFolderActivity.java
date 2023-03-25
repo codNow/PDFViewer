@@ -25,6 +25,7 @@ import com.sasha.pdfviewer.adapter.RecentAdapter;
 import com.sasha.pdfviewer.model.ImageModel;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.model.RecentModel;
+import com.sasha.pdfviewer.utils.ImageUtils;
 import com.sasha.pdfviewer.view.MainActivity;
 
 import java.io.File;
@@ -32,7 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ExtractedImagesFolderActivity extends AppCompatActivity {
+public class ExtractedImagesFolderActivity extends AppCompatActivity
+        implements ImageAdapter.OnImageClickListener {
 
     private ArrayList<ImageModel> imageList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -72,10 +74,10 @@ public class ExtractedImagesFolderActivity extends AppCompatActivity {
     }
 
     private void displayImages(){
-        imageList = getImagesFromFolder(folderName);
+        imageList = ImageUtils.allImageFile(this, folderName);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        imageAdapter = new ImageAdapter(this, imageList);
+        imageAdapter = new ImageAdapter(this, imageList, this);
         recyclerView.setAdapter(imageAdapter);
 
     }
@@ -88,7 +90,11 @@ public class ExtractedImagesFolderActivity extends AppCompatActivity {
 
         // Get all the images from the external storage
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED};
+        String[] projection = {
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DATE_ADDED
+        };
         String selection = MediaStore.Images.Media.DATA + " like ? ";
         String[] selectionArgs = new String[]{"%" + folderName + "%"};
         Cursor cursor = resolver.query(uri, projection, selection, selectionArgs, null);
@@ -98,12 +104,18 @@ public class ExtractedImagesFolderActivity extends AppCompatActivity {
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
                 String imageDate = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED));
                 Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
-                ImageModel imageData = new ImageModel(imageUri, imagePath, imageDate);
+                boolean isSelected = false;
+                ImageModel imageData = new ImageModel(imageUri, imagePath, imageDate, isSelected);
                 imageDataList.add(imageData);
             }
             cursor.close();
         }
 
         return imageDataList;
+    }
+
+    @Override
+    public void onImageClick(ImageModel imageModel, int position) {
+
     }
 }

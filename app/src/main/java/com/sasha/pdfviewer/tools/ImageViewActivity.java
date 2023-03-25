@@ -162,63 +162,6 @@ public class ImageViewActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         imagePdfAdapter = new ImagePdfAdapter(arrayList);
         recyclerView.setAdapter(imagePdfAdapter);
-        imagePdfAdapter.setImageClickListener(new ImagePdfAdapter.OnImageClickListener() {
-            @Override
-            public void onImageClick(String imageUrl) {
-                Dialog dialog = new Dialog(ImageViewActivity.this, R.style.DialogBackground);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.setContentView(R.layout.zoom_fullscreen_image);
-
-                ImageView imageView = dialog.findViewById(R.id.imageView);
-                ImageView rotateLeft = dialog.findViewById(R.id.back_button);
-                ImageView rotateRight = dialog.findViewById(R.id.forward_button);
-                Picasso.get().load(imageUrl).into(imageView);
-                dialog.show();
-                Animation zoomInAnimation = AnimationUtils.loadAnimation(ImageViewActivity.this, R.anim.zoom_in);
-                imageView.startAnimation(zoomInAnimation);
-                rotateLeft.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        /*Bitmap rotatedBitmap = rotateBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), -90);
-                        imageView.setImageBitmap(rotatedBitmap);
-                        saveBitmap(rotatedBitmap, new File(imagePath));*/
-                        rotateRealTime(imageView, -90);
-                        saveBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), new File(imagePath));
-                        imagePdfAdapter.notifyDataSetChanged();
-                    }
-                });
-
-                rotateRight.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        /*Bitmap rotatedBitmap = rotateBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), +90);
-                        imageView.setImageBitmap(rotatedBitmap);
-                        saveBitmap(rotatedBitmap, new File(imagePath));*/
-                        rotateRealTime(imageView, +90);
-                        saveBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), new File(imagePath));
-                        imagePdfAdapter.notifyDataSetChanged();
-                    }
-                });
-
-
-
-               /* if (!isZoomed) {
-                    // Zoom in animation
-                    Animation zoomInAnimation = AnimationUtils.loadAnimation(ImageViewActivity.this, R.anim.zoom_in);
-                    imageView.startAnimation(zoomInAnimation);
-                    isZoomed = true;
-                } else {
-                    // Zoom out animation
-                    Animation zoomOutAnimation = AnimationUtils.loadAnimation(ImageViewActivity.this, R.anim.zoom_out);
-                    imageView.startAnimation(zoomOutAnimation);
-                    isZoomed = false;
-                }*/
-            }
-        });
-
-
-
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -244,7 +187,6 @@ public class ImageViewActivity extends AppCompatActivity{
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
@@ -315,7 +257,7 @@ public class ImageViewActivity extends AppCompatActivity{
             public void onClick(View view) {
                 if (singleImage != null) {
                     if (TextUtils.isEmpty(editText.getText().toString())){
-                        Toast.makeText(ImageViewActivity.this, "Please enter your new file name", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ImageViewActivity.this, R.string.please_enter_file_name, Toast.LENGTH_SHORT).show();
                     }
                     else{
                         convertSingleImage(path, name, bitmap);
@@ -327,7 +269,7 @@ public class ImageViewActivity extends AppCompatActivity{
                         compressAndConvert(urlList);
                     }
                     else {
-                        Toast.makeText(ImageViewActivity.this, "Please enter your new file name", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ImageViewActivity.this, R.string.please_enter_file_name, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -339,52 +281,16 @@ public class ImageViewActivity extends AppCompatActivity{
 
     private void compressAndConvert(ArrayList<Uri> urlList) {
         String filename = editText.getText().toString();
-        String dir = Environment.getExternalStorageDirectory() + "/ConvertedPdf/"+filename;
+        String dir = Environment.getExternalStorageDirectory() + "/Converted Pdf/"+filename;
         File file = new File(dir);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdir();
-            convertImages(urlList, filename, dir);
-        }else{
-            convertDialog.show();
-            convertImages(urlList, filename, dir);
-            new CountDownTimer(3500, 1500) {
-                @Override
-                public void onTick(long l) {
-
-                }
-                @Override
-                public void onFinish() {
-                    try {
-                        ConvertImageToPdf.compressAndConvertToPdf(urlList, filename, ImageViewActivity.this);
-                        Toast.makeText(ImageViewActivity.this, "success", Toast.LENGTH_SHORT).show();
-                        convertDialog.dismiss();
-                        imageView.setVisibility(View.GONE);
-                        convertBtn.setVisibility(View.GONE);
-                        galleryBtn.setVisibility(View.VISIBLE);
-                        editText.setVisibility(View.GONE);
-                        arrayList.clear();
-                        popUpDialog(filename, dir);
-                    }
-                    catch (IOException e){
-                        e.printStackTrace();
-                        convertDialog.dismiss();
-                        imageView.setVisibility(View.GONE);
-                        convertBtn.setVisibility(View.GONE);
-                        galleryBtn.setVisibility(View.VISIBLE);
-                        editText.setVisibility(View.GONE);
-                        arrayList.clear();
-                        Toast.makeText(ImageViewActivity.this, "An Error Occurred"+ e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }.start();
         }
-
-    }
-    private void convertImages(ArrayList<Uri> urlList, String filename, String dir) {
         convertDialog.show();
         new CountDownTimer(3500, 1500) {
             @Override
             public void onTick(long l) {
+
             }
             @Override
             public void onFinish() {
@@ -415,7 +321,7 @@ public class ImageViewActivity extends AppCompatActivity{
 
     private void convertSingleImage(String path, String name, Bitmap bitmap) {
         String file_name = editText.getText().toString();
-        String directory = Environment.getExternalStorageDirectory() + "/ConvertedPdf/"+file_name;
+        String directory = Environment.getExternalStorageDirectory() + "/Converted Pdf/"+file_name;
         final Dialog convertDialog = new Dialog(this);
         convertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         convertDialog.setContentView(R.layout.progress_dialog);
@@ -428,11 +334,8 @@ public class ImageViewActivity extends AppCompatActivity{
 
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdir();
-            convertImageSingle(file_name, directory);
-        } else {
-            convertImageSingle(file_name, directory);
-
         }
+        convertImageSingle(file_name, directory);
     }
 
     private void convertImageSingle(String file_name, String directory) {
@@ -538,27 +441,7 @@ public class ImageViewActivity extends AppCompatActivity{
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setGravity(Gravity.TOP);
     }
-    private Bitmap rotateBitmap(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-    }
 
-    private void saveBitmap(Bitmap bitmap, File file) {
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void rotateRealTime(ImageView imageView, float angle) {
-        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        imageView.setImageBitmap(rotatedBitmap);
-    }
 
 
 }

@@ -10,9 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,13 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.google.android.material.snackbar.Snackbar;
 import com.sasha.pdfviewer.R;
-import com.sasha.pdfviewer.model.ModelPdf;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.view.AllPdfFileViewActivity;
 import com.sasha.pdfviewer.view.PDFViewerActivity;
@@ -46,7 +41,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

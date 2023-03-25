@@ -135,7 +135,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
         }*/
 
         File destiny = new File(Environment.getExternalStorageDirectory() +
-                "/MySplitPdf/" + title);
+                "/Split Folder/" + title);
         if (!destiny.getParentFile().exists()){
             destiny.getParentFile().mkdir();
         }
@@ -154,7 +154,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
                     try {
 
                         SplitUtil.splitWithItext(filePath, destiny  + ".pdf");
-                        Toast.makeText(context, "Pdf File split successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.split_success, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         popupSuccessDialog(v, filePath, String.valueOf(destiny), title);
                     }

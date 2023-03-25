@@ -3,18 +3,10 @@ package com.sasha.pdfviewer.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.sasha.pdfviewer.model.ModelPdf;
 import com.sasha.pdfviewer.model.PdfModel;
-import com.sasha.pdfviewer.view.PagingActivity;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class FileUtils {

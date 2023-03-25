@@ -18,6 +18,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
+import com.sasha.pdfviewer.model.ImageModel;
 import com.sasha.pdfviewer.tools.ImageViewActivity;
 
 import java.io.ByteArrayOutputStream;
@@ -30,9 +31,8 @@ import java.util.List;
 public class ConvertImageToPdf {
 
 
-
     public static void convertMultipleImages(ArrayList<String> imageList, String filePath) throws IOException {
-        String directoryPath = Environment.getExternalStorageDirectory() + "/ConvertedPdf/";
+        String directoryPath = Environment.getExternalStorageDirectory() + "/Converted Pdf/";
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(stream);
@@ -57,7 +57,7 @@ public class ConvertImageToPdf {
 
 
     public static void compressAndConvertToPdf(ArrayList<Uri> imageList, String fileName, Context context) throws IOException{
-        String directoryPath = Environment.getExternalStorageDirectory() + "/ConvertedPdf/";
+        String directoryPath = Environment.getExternalStorageDirectory() + "/Converted Pdf/";
         File file = new File(directoryPath + fileName + ".pdf");
         PdfDocument pdf = new PdfDocument(new PdfWriter(file));
         // Create a Document
@@ -92,18 +92,41 @@ public class ConvertImageToPdf {
         document.close();
     }
 
-    /*  for (String imagePath : imageList) {
-        // Compress the image using the Bitmap class
-        Bitmap image = BitmapFactory.decodeFile(imagePath);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 75, stream);
-        byte[] byteArray = stream.toByteArray();
+    public static void convertImageToPdf(ArrayList<ImageModel> imageList, String fileName, Context context) throws IOException{
+        String directoryPath = Environment.getExternalStorageDirectory() + "/ConvertedPdf/";
+        File file = new File(directoryPath + fileName + ".pdf");
+        PdfDocument pdf = new PdfDocument(new PdfWriter(file));
+        // Create a Document
+        Document document = new Document(pdf);
+        // Iterate through the list of image URIs
+        for (ImageModel imageUri : imageList) {
+            ContentResolver contentResolver = context.getContentResolver();
+            Uri uri = imageUri.getUri();
+            //get the bitmap from the uri
 
-        // Add the image to the PDF
-        Image img = new Image(ImageDataFactory.create(byteArray));
-        document.add(img);
+            Bitmap image = MediaStore.Images.Media.getBitmap(contentResolver, uri);
+            /*int width = image.getWidth();
+            int height = image.getHeight();
+            float bitmapRatio = (float)width / (float) height;
+            if (bitmapRatio > 1) {
+                width = 1024;
+                height = (int) (width / bitmapRatio);
+            } else {
+                height = 1024;
+                width = (int) (height * bitmapRatio);
+            }
+            Bitmap imageBitmap = Bitmap.createScaledBitmap(image, width, height, true);*/
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            // Add the image to the PDF
+            Image img = new Image(ImageDataFactory.create(byteArray));
+            document.add(img);
+        }
+
+        // Close the document
+        document.close();
     }
-*/
-
 
 }

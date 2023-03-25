@@ -170,18 +170,12 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
         /*File destiny = new File(Environment.getExternalStorageDirectory() +
                 "/ConvertWord/");*/
         String dest = Environment.getExternalStorageDirectory() +
-                "/ConvertWord/" + title;
+                "/Word Folder/" + title;
         File destinyFile = new File(dest);
 
         dialog.show();
-        /*if (!destinyFile.getParentFile().exists()){
+        if (!destinyFile.getParentFile().exists()){
             destinyFile.getParentFile().mkdir();
-        }*/
-        File destiny = new File(Environment.getExternalStorageDirectory() +
-                "/ConvertWord/" + title+".doc");
-
-        if (!destiny.getParentFile().exists()){
-            destiny.getParentFile().mkdir();
         }
 
         if (path != null){

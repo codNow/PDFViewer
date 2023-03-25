@@ -2,11 +2,9 @@ package com.sasha.pdfviewer.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -14,30 +12,21 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.system.ErrnoException;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,18 +36,10 @@ import android.widget.Toast;
 
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.PagingAdapter;
-import com.sasha.pdfviewer.adapter.PdfAdapter;
-import com.sasha.pdfviewer.model.ModelPdf;
 import com.sasha.pdfviewer.model.PdfModel;
-import com.sasha.pdfviewer.model.RecentModel;
-import com.sasha.pdfviewer.tools.PaginationScrollListener;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.InvalidPathException;
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PagingActivity extends AppCompatActivity implements View.OnLongClickListener, PagingAdapter.OnItemClicks, PagingAdapter.OnFileLongClick {
 

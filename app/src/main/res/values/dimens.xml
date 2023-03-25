@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="menu_item_icon_size">40dp</dimen>
+    <dimen name="start_margin">10dp</dimen>
+    <dimen name="end_margin">10dp</dimen>
+    <dimen name="top_margin">10dp</dimen>
+    <dimen name="bottom_margin">10dp</dimen>
+    <dimen name="large_start">40dp</dimen>
+    <dimen name="large_end">40dp</dimen>
+    <dimen name="large_top">40dp</dimen>
+    <dimen name="large_bottom">40dp</dimen>
+
+
 </resources>

@@ -8,16 +8,18 @@ public class ImageModel {
     private Uri uri;
     private String imagePath;
     private String imageDate;
+    private boolean isSelected;
 
 
     public ImageModel(){
 
     }
 
-    public ImageModel(Uri uri, String imagePath, String imageDate) {
+    public ImageModel(Uri uri, String imagePath, String imageDate, boolean isSelected) {
         this.uri = uri;
         this.imagePath = imagePath;
         this.imageDate = imageDate;
+        this.isSelected = isSelected;
     }
 
     public Uri getUri() {
@@ -42,5 +44,13 @@ public class ImageModel {
 
     public void setImageDate(String imageDate) {
         this.imageDate = imageDate;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

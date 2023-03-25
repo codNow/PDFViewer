@@ -75,7 +75,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
                 textView.setText(R.string.new_file_progress);
                 dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
                 String destiny = Environment.getExternalStorageDirectory() +
-                        "/NewPdfDocument/"+title+".pdf";
+                        "/NewFile Folder/"+title+".pdf";
                 File dest = new File(destiny);
 
                 if (!dest.getParentFile().exists()){
@@ -99,7 +99,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
                                     PdfFont font = PdfFontFactory.createFont();
                                     canvas.beginText().setFontAndSize(font, 12).moveText(36, 750).showText(inputText).endText();
                                     pdfDoc.close();
-                                    Toast.makeText(getApplicationContext(), "Create Successfully", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), R.string.new_file_success, Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                     newText.setText("");
                                     textTitle.setText("");
@@ -107,7 +107,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
                                 }
                                 else{
                                     dialog.dismiss();
-                                    Toast.makeText(NewPdfFileActivity.this, "Please write something", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(NewPdfFileActivity.this, R.string.please_write_something, Toast.LENGTH_LONG).show();
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -119,7 +119,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
                     }.start();
                 }else {
                     dialog.dismiss();
-                    Toast.makeText(NewPdfFileActivity.this, "Please write something", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewPdfFileActivity.this, R.string.please_write_something, Toast.LENGTH_SHORT).show();
                 }
 
             }

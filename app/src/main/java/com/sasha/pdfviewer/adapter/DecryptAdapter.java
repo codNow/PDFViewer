@@ -19,18 +19,29 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnRenderListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.itextpdf.io.source.IRandomAccessSource;
+import com.itextpdf.kernel.exceptions.BadPasswordException;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.ReaderProperties;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
-import com.sasha.pdfviewer.utils.SplitUtil;
+import com.sasha.pdfviewer.utils.PdfUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +50,8 @@ import java.util.ArrayList;
 public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHolder> {
     private Context context;
     private ArrayList<PdfModel> pdfModelArrayList;
+    private ViewHolder holder;
+    private boolean isError = false;
 
     public DecryptAdapter(Context context, ArrayList<PdfModel> pdfModelArrayList) {
         this.context = context;
@@ -49,7 +62,8 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.pdf_layout, parent, false);
-        return new ViewHolder(view);
+        holder =  new ViewHolder(view);
+        return holder;
     }
 
     @Override
@@ -68,7 +82,6 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
         holder.pdfPath.setText(parentPath);
         try {
             new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
-            holder.pdfFile.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
             holder.itemView.setVisibility(View.VISIBLE);
@@ -77,47 +90,96 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.option_btn.setVisibility(View.GONE);
-                holder.checkboxImage.setVisibility(View.VISIBLE);
-                final Dialog dialog = new Dialog(view.getRootView().getContext());
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.password_layout);
-                EditText editText;
-                Button cancelBtn, okBtn;
-                TextView question_text, textViewTitle, titleText;
-                titleText = dialog.findViewById(R.id.textTitle);
-                titleText.setText(R.string.removed_title);
-                editText = dialog.findViewById(R.id.pwdText);
-                textViewTitle = dialog.findViewById(R.id.advice_text);
-                textViewTitle.setText(R.string.enter_password_question);
-                cancelBtn = dialog.findViewById(R.id.buttonNo);
-                okBtn = dialog.findViewById(R.id.buttonYes);
-                cancelBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        holder.checkboxImage.setVisibility(View.GONE);
-                        holder.option_btn.setVisibility(View.VISIBLE);
-                    }
-                });
-                okBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String pwdText = editText.getText().toString();
-                        holder.checkboxImage.setVisibility(View.GONE);
-                        unlockPdf(position, v, filePath, title, pwdText);
-                        dialog.dismiss();
 
-                    }
-                });
-                dialog.show();
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().setGravity(Gravity.END);
+                if (!PdfUtils.isFileNotLock(file)) {
+                    holder.option_btn.setVisibility(View.GONE);
+                    holder.checkboxImage.setVisibility(View.VISIBLE);
+                    final Dialog dialog = new Dialog(view.getRootView().getContext());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.password_layout);
+                    EditText editText;
+                    Button cancelBtn, okBtn;
+                    TextView question_text, textViewTitle, titleText;
+                    titleText = dialog.findViewById(R.id.textTitle);
+                    titleText.setText(R.string.removed_title);
+                    editText = dialog.findViewById(R.id.pwdText);
+                    textViewTitle = dialog.findViewById(R.id.advice_text);
+                    textViewTitle.setText(R.string.enter_password_question);
+                    cancelBtn = dialog.findViewById(R.id.buttonNo);
+                    okBtn = dialog.findViewById(R.id.buttonYes);
+                    cancelBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    okBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            holder.checkboxImage.setVisibility(View.GONE);
+                            holder.option_btn.setVisibility(View.VISIBLE);
+                            String pwdText = editText.getText().toString();
+                            String destiny = Environment.getExternalStorageDirectory() +
+                                    "/Unlocked Folder/" + title;
+                            File dest = new File(destiny);
+                            dialog.show();
+
+                            if (!dest.getParentFile().exists()){
+                                dest.getParentFile().mkdir();
+                            }
+                            Dialog loadingDialog = new Dialog(v.getRootView().getContext());
+                            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            loadingDialog.setContentView(R.layout.progress_dialog);
+                            loadingDialog.setCanceledOnTouchOutside(false);
+                            loadingDialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
+                            TextView textView = loadingDialog.findViewById(R.id.loading_text);
+                            textView.setText(R.string.unlock_progress);
+                            new CountDownTimer(1500, 1500){
+
+                                @Override
+                                public void onTick(long l) {
+                                    loadingDialog.show();
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    try {
+                                        EncryptDecrypt.decrypt(filePath, destiny+".pdf", pwdText);
+                                        popupSuccessDialog(view, filePath, destiny,title);
+                                    } catch (BadPasswordException e) {
+                                        loadingDialog.dismiss();
+                                        dialog.show();
+                                        // Incorrect password, show error message to user
+                                        Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } catch (Exception e) {
+                                        // Other error occurred, show error message to user
+                                        Toast.makeText(context, "Error decrypting PDF", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    loadingDialog.dismiss();
+
+                                }
+                            }.start();
+
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.getWindow().setGravity(Gravity.END);
+                } else {
+                    Snackbar.make(view, R.string.file_not_protected, Snackbar.LENGTH_SHORT).show();
+                }
+
             }
         });
 
     }
+
 
     private void unlockPdf(int position, View v, String filePath, String title, String pwdText) {
         Dialog dialog = new Dialog(v.getRootView().getContext());
@@ -128,7 +190,7 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
         textView.setText(R.string.unlock_progress);
         dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
         String destiny = Environment.getExternalStorageDirectory() +
-                "/UnlockedPdf/" + title;
+                "/Unlocked Folder/" + title;
         File dest = new File(destiny);
         dialog.show();
 
@@ -155,6 +217,10 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
                     Toast.makeText(context, "Password Removed successfully", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     popupSuccessDialog(v, filePath, destiny, title);
+                }
+                catch (BadPasswordException e){
+                    e.printStackTrace();
+                    Toast.makeText(context, "Incorrect Password", Toast.LENGTH_SHORT).show();
                 }
                 catch (IOException e){
                     e.printStackTrace();
@@ -224,7 +290,8 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
         private TextView pdfTitle, timeStamp, pdfSize, pdfPath;
         private ImageView option_btn, imageView, checkboxImage;
         private CheckBox checkBox;
-        private RelativeLayout pdfFile;
+        private LinearLayout pdfFile;
+        private PDFView pdfView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -236,6 +303,7 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
             imageView = itemView.findViewById(R.id.imageView);
             checkboxImage = itemView.findViewById(R.id.checking);
             pdfFile = itemView.findViewById(R.id.pdf_layout_id);
+            pdfView = itemView.findViewById(R.id.pdfView);
         }
     }
 }

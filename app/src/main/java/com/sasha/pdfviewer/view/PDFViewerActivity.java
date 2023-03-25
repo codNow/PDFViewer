@@ -35,7 +35,9 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 
+import com.github.barteksc.pdfviewer.listener.OnRenderListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.itextpdf.kernel.exceptions.BadPasswordException;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -124,7 +126,7 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
 
         progressBar.setVisibility(View.VISIBLE);
 
-        new CountDownTimer(1000, 1000){
+        new CountDownTimer(1500, 1500){
 
             @Override
             public void onTick(long l) {
@@ -133,17 +135,19 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
 
             @Override
             public void onFinish() {
-                pdfView.fromFile(listFile)
-                        .onError(errorListener)
-                        .onPageError(PDFViewerActivity.this)
-                        .onPageChange(PDFViewerActivity.this)
-                        .scrollHandle(new DefaultScrollHandle(PDFViewerActivity.this))
-                        .defaultPage(0)
-                        .load();
-                progressBar.setVisibility(View.GONE);
+
                 try {
+                    pdfView.fromFile(listFile)
+                            .onError(errorListener)
+                            .onPageError(PDFViewerActivity.this)
+                            .onPageChange(PDFViewerActivity.this)
+                            .scrollHandle(new DefaultScrollHandle(PDFViewerActivity.this))
+                            .defaultPage(0)
+                            .load();
+                    progressBar.setVisibility(View.GONE);
                     copyListFile(listFile);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -175,7 +179,8 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
             public void onClick(View v) {
                 pdfView.recycle();
                 msg_text.setVisibility(View.VISIBLE);
-                pdfView.fromFile(listFile).password(password_text.getText().toString())
+                pdfView.fromFile(listFile)
+                        .password(password_text.getText().toString())
                         .onError(finalError)
                         .onPageError(PDFViewerActivity.this)
                         .onPageChange(PDFViewerActivity.this)
@@ -191,7 +196,7 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().setGravity(Gravity.END);
-        Toast.makeText(this, "File is protected ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.file_is_protect, Toast.LENGTH_SHORT).show();
     };
 
     private final OnErrorListener finalError = t ->{
@@ -206,6 +211,7 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
         password_text = dialog.findViewById(R.id.pwdText);
         msg_text = dialog.findViewById(R.id.msg_text);
         msg_text.setVisibility(View.VISIBLE);
+        msg_text.setPadding(0, 5, 0, 0);
         noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

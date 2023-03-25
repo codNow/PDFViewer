@@ -108,7 +108,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             public boolean onLongClick(View view) {
                 recentModel.setSelected(!recentModel.isSelected());
                 holder.checkboxImage.setVisibility(View.VISIBLE);
-                //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+               // holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
                 holder.option_btn.setVisibility(View.GONE);
                 selectMode = true;
                 if (selectMode){
@@ -131,7 +131,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
                 if (selectMode){
                     recentModel.setSelected(!recentModel.isSelected());
                     holder.checkboxImage.setVisibility(View.VISIBLE);
-                   // holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+                    //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
                     if (recentModel.isSelected()){
                         recentModel.setSelected(true);
                         holder.checkboxImage.setVisibility(View.VISIBLE);
@@ -167,10 +167,12 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         if (recentModel.isSelected()){
             holder.checkboxImage.setVisibility(View.VISIBLE);
             holder.option_btn.setVisibility(View.GONE);
+           // holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
         }
         else{
             holder.checkboxImage.setVisibility(View.GONE);
             holder.option_btn.setVisibility(View.VISIBLE);
+            //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
         }
 
 

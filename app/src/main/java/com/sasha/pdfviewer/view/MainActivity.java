@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -56,7 +55,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.RecentAdapter;
-import com.sasha.pdfviewer.tools.CombineActivity;
+import com.sasha.pdfviewer.tools.CameraActivity;
+import com.sasha.pdfviewer.tools.CameraFolderActivity;
 import com.sasha.pdfviewer.model.RecentModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.RealPathUtil;
@@ -70,7 +70,6 @@ import java.util.Comparator;
 public class MainActivity extends AppCompatActivity implements RecentAdapter.OnItemClicks, RecentAdapter.OnFileLongClick {
 
     private BottomNavigationView bottomNavigationView;
-
     private ImageView new_file, close_btn;
     private ActivityResultLauncher<Intent> resultLauncher;
     private LinearLayout floating_window;
@@ -106,9 +105,11 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
     private LinearLayout permission_layout;
     private Button permission_button;
     private boolean isSelectAll = false;
-    private ImageView selectBtn;
+    private ImageView selectBtn, camera_button;
     public static boolean isSelectMode;
     private Switch theme_switch;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         permission_button = findViewById(R.id.permission_button);
         permission_layout = findViewById(R.id.permission_layout);
         theme_switch = findViewById(R.id.theme_switch);
+        camera_button = findViewById(R.id.camera_button);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -149,6 +151,13 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         isStoragePermissionGranted();*/
         checkStoragePermission();
         buttonListener();
+
+        camera_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, CameraActivity.class));
+            }
+        });
 
         SharedPreferences preferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         boolean isDarkMode = preferences.getBoolean("DARK", false);
@@ -158,13 +167,6 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             theme_switch.setChecked(true);
         }
 
-        /*int currentNightMode = getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
-            theme_switch.setChecked(true);
-        } else {
-            theme_switch.setChecked(false);
-        }*/
         theme_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             }
         });
 
-        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+       /* theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (isDarkMode){
@@ -191,13 +193,15 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
             }
-        });
+        });*/
+
+
 
         new_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //getPdfFile();
-                startActivity(new Intent(MainActivity.this, CombineActivity.class));
+                startActivity(new Intent(MainActivity.this, CameraFolderActivity.class));
             }
         });
         showBottom();

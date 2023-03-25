@@ -159,13 +159,13 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                     try {
                         ImageExtractUtil.extractImages(String.valueOf(file), dest, context);
                         checkBox.setVisibility(View.GONE);
-                        Toast.makeText(context, "Extract images successes", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.extract_success, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         popUpDialog(view, title, dest);
 
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Toast.makeText(context, "No image found in this file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.no_image_found, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
 

@@ -84,12 +84,12 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
                     Button cancelBtn, okBtn;
                     TextView question_text, textViewTitle;
                     textViewTitle = dialog.findViewById(R.id.textTitle);
-                    textViewTitle.setText("Watermark Pdf");
+                    textViewTitle.setText(R.string.watermark_title);
                     editText = dialog.findViewById(R.id.editText);
                     cancelBtn = dialog.findViewById(R.id.buttonNo);
                     okBtn = dialog.findViewById(R.id.buttonYes);
                     question_text = dialog.findViewById(R.id.textMessage);
-                    question_text.setText("Enter Your Water Mark Signature");
+                    question_text.setText(R.string.watermark_text);
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -152,7 +152,7 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
         textView.setText(R.string.mark_progress);
         dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
         String destiny = Environment.getExternalStorageDirectory() +
-                "/WaterMarkPdfs/" + title;
+                "/Watermark Folder/" + title;
         File dest = new File(destiny);
         dialog.show();
 
@@ -172,12 +172,12 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
                     try {
                         WaterMarkUtil.waterMarkPdf(filePath, destiny+".pdf", water_mark);
                         dialog.dismiss();
-                        Toast.makeText(context, "Watermarked Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.watermark_success, Toast.LENGTH_SHORT).show();
                         popupSuccessDialog(v, filePath, destiny, title);
                     } catch (IOException e) {
                         e.printStackTrace();
                         dialog.dismiss();
-                        Toast.makeText(context, "Marking Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.watermark_failed, Toast.LENGTH_SHORT).show();
                     }
 
                 }

@@ -222,9 +222,9 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
         cancelBtn = dialog.findViewById(R.id.buttonNo);
         okBtn = dialog.findViewById(R.id.buttonYes);
         textTitle = dialog.findViewById(R.id.textTitle);
-        textTitle.setText("Pdf Merge");
+        textTitle.setText(R.string.merge_title);
         textMessage = dialog.findViewById(R.id.textMessage);
-        textMessage.setText("Please enter your file name");
+        textMessage.setText(R.string.merged_request);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -251,9 +251,9 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
         mdialog.setContentView(R.layout.progress_dialog);
         mdialog.setCanceledOnTouchOutside(false);
         TextView textView = mdialog.findViewById(R.id.loading_text);
-        textView.setText("Combining Pdf....");
+        textView.setText(R.string.merge_dialog);
         mdialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
-        String dest = Environment.getExternalStorageDirectory()+"/MergedPdf/"+fileName;
+        String dest = Environment.getExternalStorageDirectory()+"/Combine Folder/"+fileName;
         File file = new File(dest);
         mdialog.show();
         if (!file.getParentFile().exists()){
@@ -262,7 +262,7 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
                 startMergingPdfFile(selectedPaths, fileName, dest, mdialog);
             }
             else{
-                Toast.makeText(this, "Please enter file name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.enter_file_name, Toast.LENGTH_SHORT).show();
                 mdialog.dismiss();
             }
         }
@@ -272,7 +272,7 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
             startMergingPdfFile(selectedPaths, fileName, dest, mdialog);
 
         }else{
-            Toast.makeText(this, "Please enter your file name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_file_name, Toast.LENGTH_SHORT).show();
             mdialog.dismiss();
         }
     }
@@ -322,7 +322,7 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
                     // Close the output PDF
                     outputPdf.close();
                     observers.add(observer);
-                    Toast.makeText(getApplicationContext(), "Merged Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.combine_success, Toast.LENGTH_SHORT).show();
                     popupDoneDialog(dest, fileName);
                     mdialog.dismiss();
                 }
