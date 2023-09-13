@@ -5,11 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".tools.CameraActivity">
+
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/primary"
+        android:layout_height="70dp"
+        android:background="@color/primaryDark"
+        android:visibility="gone"
         android:id="@+id/upper_layout"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_close_24"
+        android:layout_margin="15dp"
+        android:elevation="15dp"
+        app:tint="@color/white"
+        android:id="@+id/close_camera"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_flash_auto_24"
+        android:layout_margin="15dp"
+        android:elevation="15dp"
+        app:tint="@color/white"
+        android:layout_alignParentEnd="true" />
 
     <androidx.camera.view.PreviewView
         android:layout_width="match_parent"
@@ -17,6 +36,14 @@
         android:layout_below="@id/upper_layout"
         android:layout_above="@id/lower_layout"
         android:id="@+id/camera_preview"/>
+    <!-- Image Cropper fill the remaining available height -->
+    <com.sasha.pdfviewer.cropper.CropImageView
+        android:id="@+id/cropImageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/upper_layout"
+        android:layout_above="@id/lower_layout"/>
+
     <RelativeLayout
         android:id="@+id/camera_background"
         android:layout_width="match_parent"
@@ -32,58 +59,124 @@
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="170dp"
         android:layout_alignParentBottom="true"
         android:background="@color/primary"
         android:id="@+id/lower_layout"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/camera_btn"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/camera_button"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            app:tint="@color/accent" />
+            android:gravity="center_horizontal"
+            android:padding="10sp"
+            android:background="@color/primaryDark"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/camera_ai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_mode"
+                    android:gravity="center_vertical"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/josefont"
+                    android:layout_marginEnd="15dp"
+                    android:textColor="@color/text_color2"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/camera_photo"
+                    android:gravity="center_vertical"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/josefont"
+                    android:background="@drawable/camera_rectangle_background"
+                    android:paddingStart="10sp"
+                    android:paddingEnd="10sp"
+                    android:paddingBottom="2dp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/camera_scanner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scanner"
+                    android:gravity="center_vertical"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:fontFamily="@font/josefont"
+                    android:textColor="@color/text_color2"/>
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="20sp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="45dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:civ_border_color="@color/logo_background"
+                    app:civ_border_width="1dp"
+                    android:visibility="visible"
+                    android:background="@drawable/camera_round_background"
+                    android:foreground="@drawable/foreground_effect"
+                    android:id="@+id/imageView"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/blue"
+                    android:fontFamily="@font/montserrat"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/image_count"/>
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/camera_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/camera_btn"
+                android:foreground="@drawable/foreground_effect"
+                app:tint="@color/accent" />
+
+            <ImageView
+                android:id="@+id/camera_switch"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:layout_marginStart="45dp"
+                android:src="@drawable/ic_baseline_autorenew_24"
+                android:background="@drawable/camera_round_background"
+                android:foreground="@drawable/foreground_effect"
+                app:tint="@color/accent" />
+        </LinearLayout>
 
     </LinearLayout>
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        app:civ_border_color="@color/logo_background"
-        app:civ_border_width="1dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginBottom="20dp"
-        android:visibility="visible"
-        android:id="@+id/imageView"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="@color/blue"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="105dp"
-        android:layout_marginBottom="70dp"
-        android:fontFamily="@font/josefont"
-        android:visibility="gone"
-        android:id="@+id/image_count"/>
-
-    <ImageView
-        android:id="@+id/camera_switch"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:src="@drawable/ic_baseline_autorenew_24"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="35dp"
-        android:layout_marginEnd="80dp"
-        app:tint="@color/accent" />
 
 
 </RelativeLayout>

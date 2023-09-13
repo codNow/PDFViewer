@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary"
     tools:context=".view.ProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -22,8 +23,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_dot_vertical"
             android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:id="@+id/menu_option"/>
+            android:layout_marginEnd="10dp" />
 
     </androidx.appcompat.widget.Toolbar>
     <androidx.cardview.widget.CardView
@@ -41,7 +41,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linear_two"
             android:padding="20dp"
             android:background="@drawable/small_background2"
             android:orientation="vertical">
@@ -50,8 +49,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:src="@drawable/profile_icon"
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/profile_image"/>
+                android:layout_gravity="center_horizontal" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,8 +58,7 @@
                 android:textColor="@color/text_color"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:fontFamily="@font/josefont"
-                android:id="@+id/username"/>
+                android:fontFamily="@font/josefont" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,8 +67,7 @@
                 android:textColor="@color/text_color"
                 android:textStyle="italic"
                 android:textSize="12sp"
-                android:fontFamily="@font/montserrat"
-                android:id="@+id/email_address"/>
+                android:fontFamily="@font/montserrat" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -87,8 +83,7 @@
                 android:textColor="@color/white"
                 android:fontFamily="@font/montserrat"
                 android:background="@drawable/button_background"
-                android:textStyle="bold"
-                android:id="@+id/sign_text2"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -114,8 +109,7 @@
                 android:textSize="18sp"
                 android:textColor="@color/text_color"
                 android:fontFamily="@font/josefont"
-                android:gravity="center_horizontal"
-                android:id="@+id/signInText"/>
+                android:gravity="center_horizontal" />
 
         </LinearLayout>
 
@@ -124,8 +118,7 @@
             android:layout_height="200dp"
             android:src="@drawable/app_image"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:id="@+id/app_icon"/>
+            android:layout_marginTop="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -141,8 +134,7 @@
                 android:layout_height="40dp"
                 android:padding="2dp"
                 android:layout_marginStart="25dp"
-                android:src="@drawable/gmail_icon"
-                android:id="@+id/gmail_icon"/>
+                android:src="@drawable/gmail_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -152,8 +144,7 @@
                 android:textStyle="bold"
                 android:layout_marginStart="15dp"
                 android:textSize="15sp"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/gmail_text"/>
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -169,8 +160,7 @@
                 android:layout_height="40dp"
                 android:padding="3dp"
                 android:layout_marginStart="25dp"
-                android:src="@drawable/facebook_icon"
-                android:id="@+id/facebook_icon"/>
+                android:src="@drawable/facebook_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -180,8 +170,7 @@
                 android:textStyle="bold"
                 android:layout_marginStart="15dp"
                 android:textSize="15sp"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/facebook_text"/>
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -197,19 +186,17 @@
                 android:layout_height="40dp"
                 android:padding="2dp"
                 android:layout_marginStart="25dp"
-                android:src="@drawable/registration_icon"
-                android:id="@+id/registration_icon"/>
+                android:src="@drawable/registration_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/register_with_pdfview"
-                android:textColor="@color/text_color4"
+                android:textColor="@color/white"
                 android:fontFamily="@font/montserrat"
                 android:textStyle="bold"
                 android:layout_marginStart="15dp"
                 android:textSize="15sp"
-                android:layout_gravity="center_vertical"
-                android:id="@+id/registration_text"/>
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
 
         <TextView
@@ -220,8 +207,7 @@
             android:textSize="16sp"
             android:fontFamily="@font/josefont"
             android:layout_marginTop="25dp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/register_question"/>
+            android:layout_gravity="center_horizontal" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -229,15 +215,14 @@
             android:text="@string/sign_in_or_sign_up"
             android:layout_marginTop="10dp"
             android:textSize="16sp"
-            android:paddingStart="15dp"
+            android:paddingStart="35dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:paddingEnd="15dp"
+            android:paddingEnd="35dp"
             android:textColor="@color/white"
             android:fontFamily="@font/montserrat"
             android:background="@drawable/button_background"
-            android:textStyle="bold"
-            android:id="@+id/sign_text"/>
+            android:textStyle="bold" />
 
 
 

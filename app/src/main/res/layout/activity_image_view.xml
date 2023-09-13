@@ -4,125 +4,267 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary"
     tools:context=".tools.ImageViewActivity">
 
-    <RelativeLayout
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/first_layout">
-
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primaryDark"
-            android:id="@+id/toolbar">
-
-            <TextView
-                android:id="@+id/chooseText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/josefont"
-                android:text="@string/image_s_convert"
-                android:textColor="@color/text_color"
-                android:textSize="24sp" />
-        </androidx.appcompat.widget.Toolbar>
-
-        <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
-            android:layout_width="0dp"
-            android:layout_below="@id/toolbar"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:id="@+id/recyclerView"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        android:id="@+id/toolbar">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/selected_image_s_will_display_here"
-            android:layout_below="@id/toolbar"
-            android:layout_marginTop="30dp"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/montserrat"
-            android:textSize="18sp"
+            android:fontFamily="@font/josefont"
+            android:text="@string/converter"
             android:textStyle="bold"
-            android:id="@+id/selected_display"/>
+            android:textColor="@color/Red_color"
+            android:textSize="24sp" />
+
 
         <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_below="@id/toolbar"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/new_logo_one"
-            android:visibility="gone"
-            android:id="@+id/imageView"/>
-        <EditText
-            android:layout_width="match_parent"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/select_all_icon"
+            android:layout_gravity="end"
+            android:id="@+id/select_button"
+            android:padding="2dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:foreground="@drawable/click_effect"
+            app:tint="@color/blue"
+            android:contentDescription="@string/todo" />
+
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/edit_input"
-            android:padding="10dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:hint="@string/enter_your_new_file_name"
-            android:layout_marginTop="20dp"
-            android:textCursorDrawable="@drawable/cursor_colour"
-            android:cursorVisible="true"
-            android:visibility="gone"
-            android:fontFamily="@font/montserrat"
+            android:src="@drawable/ic_round_image_24"
+            android:layout_gravity="end"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/text_color3"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_above="@id/bottom_linear"
-            android:id="@+id/fileName"/>
+            android:layout_gravity="end"
+            android:id="@+id/image_number"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/drag_and_swap_the_position"
+        android:fontFamily="@font/montserrat"
+        android:layout_below="@id/toolbar"
+        android:layout_marginStart="15dp"
+        android:id="@+id/instruction_text"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_options"
+        android:layout_below="@id/instruction_text">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/bottom_linear">
+            android:orientation="vertical">
 
-            <Button
-                android:layout_width="match_parent"
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_primary_dark"
-                android:text="Choose Image(s)"
-                android:textAllCaps="false"
-                android:textColor="@color/blue"
-                android:layout_margin="10dp"
-                android:id="@+id/galleryButton"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:id="@+id/recyclerView"/>
 
-
-            <Button
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_primary_dark"
-                android:text="@string/convert_images"
-                android:textAllCaps="false"
-                android:textColor="@color/blue"
-                android:layout_margin="10dp"
-                android:visibility="gone"
-                android:id="@+id/convertButton"/>
-
+                android:layout_marginTop="5dp"
+                android:background="@drawable/blue_rounded"
+                android:padding="5dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_outline_add_box_24"
+                android:layout_marginBottom="35dp"
+                app:tint="@color/white"
+                android:contentDescription="@string/todo" />
         </LinearLayout>
-    </RelativeLayout>
-    <ImageView
+
+    </ScrollView>
+
+
+
+    <LinearLayout
+        android:id="@+id/bottom_options"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/zoomImage"
-        android:visibility="gone"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@color/primaryDark"
+        android:layout_alignParentBottom="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:visibility="visible"
+            android:padding="5dp"
+            android:orientation="horizontal">
 
+            <LinearLayout
+                android:id="@+id/delete_linear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:foreground="@drawable/click_effect"
+                android:visibility="visible"
+                android:layout_marginEnd="15dp"
+                tools:ignore="UseCompoundDrawables">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_outline_delete_24"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/delete_icon"
+                    app:tint="@color/image_color"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:id="@+id/delete_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/text_color" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/rotate_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/left_icon"
+                    app:tint="@color/blue"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/left"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/text_color" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/rotate_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/right_icon"
+                    app:tint="@color/blue"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/right"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_color3"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/crop_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_crop_rotate_24"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/crop_icon"
+                    app:tint="@color/image_color"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:id="@+id/crop_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/crop_rotate"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/josefont"
+                    android:textColor="@color/text_color"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:id="@+id/convert_btn"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
 
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/converter_icon"
+                    android:layout_gravity="center_horizontal"
+                    app:tint="@color/Red_color"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/convert_button"
+                    android:textColor="@color/Red_color"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal" />
 
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/Red_color"
+        android:visibility="gone"
+        android:id="@+id/progressbar"/>
 
 
 </RelativeLayout>

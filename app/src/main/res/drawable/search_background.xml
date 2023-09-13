@@ -7,5 +7,5 @@
         android:width="0.5dp"/>
 
     <solid
-        android:color="@color/primaryDark"/>
+        android:color="@color/folder_color"/>
 </shape>

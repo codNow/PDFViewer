@@ -14,8 +14,8 @@
         android:layout_margin="30dp">
 
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:src="@drawable/done_icon"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
@@ -28,12 +28,16 @@
             android:text=""
             android:layout_below="@+id/upload_done_icon"
             android:textColor="@color/text_color3"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textAlignment="center"
+            android:layout_marginTop="25sp"
+            android:fontFamily="@font/montserrat"
+            android:textStyle="bold"
             android:id="@+id/successText"/>
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginTop="15sp"
             android:layout_below="@id/successText"
             android:layout_centerHorizontal="true"
             android:id="@+id/done_icon"
@@ -46,18 +50,19 @@
             android:layout_below="@id/done_icon"
             android:layout_marginBottom="10dp"
             android:textSize="16sp"
+            android:layout_marginTop="15sp"
             android:textColor="@color/blue"
-            android:textStyle="bold"
             android:fontFamily="@font/josefont"
             android:id="@+id/pathText"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/purple_500"
             android:layout_below="@id/pathText"
             android:layout_marginTop="10dp"
+            android:fontFamily="@font/montserrat"
             android:id="@+id/question_text"/>
 
 
@@ -66,10 +71,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="5dp"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/question_text"
-            android:id="@+id/linear1">
+            android:layout_below="@id/question_text">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:layout_width="0dp"

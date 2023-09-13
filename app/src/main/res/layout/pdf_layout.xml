@@ -1,179 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_marginTop="3dp"
     android:layout_marginBottom="3dp"
     android:id="@+id/pdf_layout_id"
     android:layout_height="wrap_content"
-    android:background="@drawable/button_background5"
-    app:cardCornerRadius="5dp">
+    >
 
-    <RelativeLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/deltaRelative">
+        android:background="@color/accent"
+        android:text="@string/please_note_that_the_converted_document_may_differ_in_formatting_compared_to_the_original"
+        android:elevation="10dp"
+        android:padding="15dp"
+        android:textColor="@color/white"
+        android:layout_margin="5dp"
+        android:fontFamily="@font/montserrat"
+        android:id="@+id/convert_note"
+        android:visibility="gone"
+        />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/pdf_linear"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
+        app:cardCornerRadius="3dp"
+        android:layout_margin="5dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/logo_background"
+        >
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/logo_background"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/app_logo_new_color"
+                android:id="@+id/imageView"
+                android:padding="1dp"
+                />
+
+            <com.github.barteksc.pdfviewer.PDFView
+                android:id="@+id/pdfView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="1dp"
+                android:elevation="-5dp"
+                android:padding="7dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/pdf_linear"
+        android:layout_centerVertical="false"
+        android:layout_marginEnd="65dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/accent"
-            android:text="@string/please_note_that_the_converted_document_may_differ_in_formatting_compared_to_the_original"
-            android:elevation="10dp"
-            android:padding="15dp"
-            android:textColor="@color/white"
-            android:layout_margin="5dp"
+            android:text="@string/pdf_name"
+            android:textSize="13sp"
+            android:layout_marginTop="5dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/text_color"
             android:fontFamily="@font/montserrat"
-            android:id="@+id/convert_note"
-            android:visibility="gone"
-            />
-        <androidx.cardview.widget.CardView
-            android:id="@+id/pdf_linear"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="5dp"
-            android:layout_margin="5dp"
-            app:cardElevation="2dp"
-            >
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_vertical">
+            android:textStyle="bold"
+            android:id="@+id/pdfName"/>
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/app_logo_new_color"
-                    android:id="@+id/imageView"
-                    android:layout_margin="1dp"
-                    />
-
-                <com.github.barteksc.pdfviewer.PDFView
-                    android:id="@+id/pdfView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:elevation="-5dp"
-                    android:padding="5dp" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
         <LinearLayout
-            android:id="@+id/linear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/pdf_linear"
-            android:layout_centerVertical="false"
-            android:layout_marginEnd="65dp"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pdf_name"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/text_color"
-                android:fontFamily="@font/josefont"
-                android:id="@+id/pdfName"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                >
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_baseline_insert_drive_file_24"
-                    android:id="@+id/file_imageView"/>
-                <TextView
-                    android:layout_width="90dp"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:fontFamily="@font/montserrat"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textColor="@color/accent"
-                    android:textSize="13sp"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/pdfPath"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/_1245kb"
-                    android:fontFamily="@font/montserrat"
-                    android:textSize="13sp"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_toRightOf="@id/linear"
-                    android:layout_marginStart="15dp"
-                    android:id="@+id/pdfSize"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true">
+            android:orientation="horizontal"
+            >
+            <ImageView
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:src="@drawable/ic_baseline_insert_drive_file_24"
+                app:tint="@color/image_color" />
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/josefont"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/accent"
+                android:textSize="11sp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/pdfPath"/>
 
-            <CheckBox
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:button="@drawable/custom_checkbox"
-                android:drawableTint="@color/blue"
-                android:buttonTint="@color/blue"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/recent_checkbox"
-                android:visibility="gone"
-                />
+                android:text="@string/_1245kb"
+                android:fontFamily="@font/montserrat"
+                android:textSize="11sp"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:id="@+id/pdfSize"/>
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_dot_vertical"
-                android:layout_centerVertical="true"
-                android:visibility="visible"
-                android:id="@+id/option_icon"
-                android:layout_marginEnd="10dp"
-                app:tint="@color/accent" />
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_round_circle_24"
-                android:visibility="gone"
-                android:id="@+id/check_circle"/>
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_baseline_check_circle_24"
-                android:id="@+id/checking"
-                android:visibility="gone"
-                android:layout_marginEnd="15dp"
-                android:elevation="10dp"
-                android:layout_centerVertical="true"/>
+        </LinearLayout>
 
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.4dp"
-            android:background="@color/accent"
-            android:layout_below="@id/pdf_linear"
-            android:layout_marginStart="60dp"
-            android:layout_marginEnd="20dp" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:button="@drawable/ic_baseline_check_circle_24"
+            android:drawableTint="@color/blue"
+            android:buttonTint="@color/blue"
+            android:layout_marginEnd="10dp"
+            android:id="@+id/recent_checkbox"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_dot_vertical"
+            android:layout_centerVertical="true"
+            android:visibility="visible"
+            android:id="@+id/option_icon"
+            app:tint="@color/accent" />
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_round_circle_24"
+            android:visibility="gone" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_baseline_check_circle_24"
+            android:id="@+id/checking"
+            android:visibility="gone"
+            android:layout_marginEnd="5dp"
+            android:elevation="10dp"
+            android:layout_centerVertical="true"/>
 
     </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.4dp"
+        android:background="@color/line_color"
+        android:layout_below="@id/pdf_linear"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="-5dp"
+        android:layout_marginEnd="20dp" />
 
-</LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/choose_background"
+        android:visibility="gone"
+        android:elevation="15dp"
+        android:id="@+id/choose_card"
+        android:orientation="horizontal" />
+
+</RelativeLayout>

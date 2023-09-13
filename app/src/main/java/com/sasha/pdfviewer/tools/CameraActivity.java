@@ -3,24 +3,22 @@ package com.sasha.pdfviewer.tools;
 import static android.Manifest.permission.CAMERA;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.camera2.Camera2Config;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.CameraState;
-import androidx.camera.core.ExposureState;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
-import androidx.camera.core.ZoomState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.exifinterface.media.ExifInterface;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,38 +26,47 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.params.MeteringRectangle;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.ScaleGestureDetector;
-import android.view.Surface;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.CameraAdapter;
+import com.sasha.pdfviewer.cropper.CropImage;
+import com.sasha.pdfviewer.cropper.CropImageView;
 import com.sasha.pdfviewer.model.ImageModel;
-import com.squareup.picasso.Picasso;
+import com.sasha.pdfviewer.view.MainActivity;
+
+
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -71,7 +78,7 @@ public class CameraActivity extends AppCompatActivity {
     private ProcessCameraProvider cameraProvider;
     private CameraSelector cameraSelector;
     private ImageCapture imageCapture;
-    private ImageView cameraBtn, switchBtn;
+    private ImageView cameraBtn, switchBtn, closeCamera;
     private int CAMERA_PERMISSION_CODE = 101;
     private RecyclerView recyclerView;
     private CameraAdapter cameraAdapter;
@@ -84,7 +91,7 @@ public class CameraActivity extends AppCompatActivity {
     private Camera camera;
     private CameraActivity context;
     private CircleImageView imageView;
-    private TextView imageCount;
+    private TextView imageCount, cameraAi, cameraScanner;
     private int count = 0;
     private int deviceOrientation = 0;
     private boolean isPortrait = false;
@@ -93,12 +100,23 @@ public class CameraActivity extends AppCompatActivity {
     private float maxZoomRatio;
     private CameraInfo cameraInfo;
     private CameraControl cameraControl;
+    private int mSelectedMode = 0;
+    //private Mode mode = Mode.PHOTO;
+    String folder =Environment.getExternalStorageDirectory()+
+            "/AppImages/";
+    private Uri picUri;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+
+
+
+
+
 
         uriArrayList = new ArrayList<>();
 
@@ -109,6 +127,10 @@ public class CameraActivity extends AppCompatActivity {
         imageCount = findViewById(R.id.image_count);
         camera_background = findViewById(R.id.camera_background);
         switchBtn = findViewById(R.id.camera_switch);
+        closeCamera = findViewById(R.id.close_camera);
+        cameraScanner = findViewById(R.id.camera_scanner);
+        cameraAi = findViewById(R.id.camera_ai);
+
 
 
         startCamera();
@@ -140,15 +162,29 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
         };
-        ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this,
-                new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+        cameraScanner.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                camera.getCameraControl().setZoomRatio(camera.getCameraInfo()
-                        .getZoomState().getValue().getZoomRatio() * detector.getScaleFactor());
-                return true;
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Coming soon!", Toast.LENGTH_SHORT).show();
             }
         });
+        cameraAi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Coming Soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        closeCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
+
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL,true);
         recyclerView.setLayoutManager(layoutManager);
@@ -156,6 +192,8 @@ public class CameraActivity extends AppCompatActivity {
         recyclerView.setAdapter(cameraAdapter);
 
     }
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -197,6 +235,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void startCamera(){
         camera_preview = findViewById(R.id.camera_preview);
         cameraProviderFuture =
@@ -213,6 +252,8 @@ public class CameraActivity extends AppCompatActivity {
             imageCapture = new ImageCapture.Builder()
                     .setTargetRotation(getWindowManager()
                             .getDefaultDisplay().getRotation())
+                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                    .setFlashMode(ImageCapture.FLASH_MODE_AUTO)
                     .build();
 
             preview = new Preview.Builder().build();
@@ -224,15 +265,34 @@ public class CameraActivity extends AppCompatActivity {
             cameraControl = camera.getCameraControl();
             cameraInfo = camera.getCameraInfo();
             maxZoomRatio = cameraInfo.getZoomState().getValue().getMaxZoomRatio();
-            if (currentZoomRatio < maxZoomRatio) {
-                currentZoomRatio += 0.1f;
-                cameraControl.setZoomRatio(currentZoomRatio);
-            }
+            scaleGestureDetector = new ScaleGestureDetector(this,
+                    new ScaleGestureDetector.OnScaleGestureListener() {
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    currentZoomRatio *= detector.getScaleFactor();
+                    currentZoomRatio = Math.max(1f, Math.min(currentZoomRatio, maxZoomRatio));
+                    camera.getCameraControl().setZoomRatio(currentZoomRatio);
+                    return true;
+                }
 
-            if (currentZoomRatio > 1.0f) {
-                currentZoomRatio -= 0.1f;
-                cameraControl.setZoomRatio(currentZoomRatio);
-            }
+                @Override
+                public boolean onScaleBegin(ScaleGestureDetector detector) {
+                    return true;
+                }
+
+                @Override
+                public void onScaleEnd(ScaleGestureDetector detector) {
+
+                }
+            });
+            camera_preview.setOnTouchListener((view, event) -> {
+                if (event.getPointerCount() > 1) {
+                    scaleGestureDetector.onTouchEvent(event);
+                    return true;
+                }
+                return false;
+            });
+
             switchBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -243,24 +303,59 @@ public class CameraActivity extends AppCompatActivity {
     }
     private void takePicture() throws IOException  {
         String name = String.valueOf(System.currentTimeMillis());
-        String myFolder = "CameraPhotos";
+        String myFolder = "AppImages";
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-        //contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/" + myFolder);
-        String folderName =
-        Environment.getExternalStorageDirectory() + "/CameraPhotos/" + name;
-        File folder = new File(folderName);
-        if (!folder.getParentFile().exists()) {
-            folder.getParentFile().mkdir();
+        String folderName =Environment.getExternalStorageDirectory()+
+        "/AppImages/" + name;
+        File newFolder = new File(folderName);
+        if (!newFolder.getParentFile().exists()) {
+            newFolder.getParentFile().mkdir();
         }
+
 
         ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions
                 .Builder(this.getContentResolver(),
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues).build();
 
-        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this),
+        imageCapture.takePicture(
+                new ImageCapture.OutputFileOptions.Builder(newFolder).build(),
+                ContextCompat.getMainExecutor(this),
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        picUri = outputFileResults.getSavedUri();
+                        String imagePath = picUri.getPath();
+
+                        String imageDate = String.valueOf(System.currentTimeMillis());
+                        if (picUri != null){
+                            ContentResolver contentResolver = getContentResolver();
+
+
+
+                            CropImage.ActivityBuilder activityBuilder
+                                    = CropImage.activity(picUri);
+                            activityBuilder.setGuidelines(CropImageView.Guidelines.ON);
+                            activityBuilder.setMultiTouchEnabled(true);
+                            activityBuilder.start(CameraActivity.this);
+
+
+                        }else {
+                            camera_background.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+
+                    }
+                }
+        );
+
+      /*  imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this),
                 new ImageCapture.OnImageSavedCallback() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -271,48 +366,109 @@ public class CameraActivity extends AppCompatActivity {
                 String imageDate = String.valueOf(System.currentTimeMillis());
                 if (picUri != null){
                     ContentResolver contentResolver = getContentResolver();
-                    try {
-                        Bitmap image = MediaStore.Images.Media.getBitmap(contentResolver, picUri);
-                        Bitmap rotateImage = rotatedBitmap(image, deviceOrientation);
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        rotateImage.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
-                        byte[] compressedData = outputStream.toByteArray();
-                        FileOutputStream fos = null;
-                        fos = new FileOutputStream(new File(folderName+".jpg"));
-                        fos.write(compressedData);
-                        fos.flush();
-                        fos.close();
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    //camera_background.setVisibility(View.VISIBLE);
-                    ImageModel imageModel = new ImageModel(picUri,imagePath, imageDate, isSelected);
-                    uriArrayList.add(imageModel);
-                    count = count + 1;
-                    Uri imageUri = imageModel.getUri();
-                    imageView.setVisibility(View.VISIBLE);
-                    imageCount.setVisibility(View.VISIBLE);
-                    Picasso.get().load(imageUri).into(imageView);
-                    imageCount.setText(String.valueOf(count));
-                    cameraAdapter.notifyDataSetChanged();
-                    Log.d("Orients", String.valueOf(deviceOrientation));
-                    imageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            startActivity(new Intent(CameraActivity.this, CameraFolderActivity.class));
-                        }
-                    });
+                    CropImage.ActivityBuilder cropImageBuilder = CropImage.activity(picUri);
+                    cropImageBuilder.setGuidelines(CropImageView.Guidelines.ON);
+                    cropImageBuilder.setMultiTouchEnabled(true);
+                    cropImageBuilder.start(CameraActivity.this);
+
                 }else {
                     camera_background.setVisibility(View.GONE);
                 }
+
+
+
             }
                     @Override
             public void onError(@NonNull ImageCaptureException exception) {
                 Toast.makeText(CameraActivity.this,
                         exception.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                Bitmap cropImage = null;
+                try {
+                    cropImage = MediaStore.Images.Media.getBitmap(getContentResolver(),resultUri);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+                if (cropImage != null){
+                    Calendar calendar = Calendar.getInstance();
+                    String dateFormat = DateFormat.format("yyyymmdd_hhmmss", calendar).toString();
+                    String name = "IMG_"+dateFormat;
+                    String folderName = folder+name;
+                    File folder = new File(folderName);
+                    if (!folder.getParentFile().exists()) {
+                        folder.getParentFile().mkdir();
+                    }
+                    Bitmap rotateImage = rotatedBitmap(cropImage, deviceOrientation);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    rotateImage.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
+                    byte[] compressedData = outputStream.toByteArray();
+                    FileOutputStream fos = null;
+                    try {
+                        fos = new FileOutputStream(new File(folderName+".jpg"));
+                        fos.write(compressedData);
+                        fos.flush();
+                        fos.close();
+
+                        if (picUri != null) {
+                            String path1 = picUri.getPath();
+                            File imageFile = new File(path1);
+                            if (imageFile.exists()) {
+                                // Delete the image file from the file system
+                                imageFile.delete();
+
+                                // Delete the image file from the MediaStore database
+                                ContentResolver contentResolver = getContentResolver();
+                                int rowsDeleted = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                        MediaStore.Images.Media.DATA + "=?", new String[]{path1});
+                                if (rowsDeleted == 0) {
+                                    // Log an error if the image file was not deleted from the MediaStore database
+                                    Log.e("TAG", "Failed to delete image file from MediaStore: " + path1);
+                                } else {
+                                    // Notify the MediaStore to update its database
+                                    MediaScannerConnection.scanFile(CameraActivity.this, new String[]{path1}, null,
+                                            (path, uri) -> {
+                                                Log.d("TAG", "Image file deleted from MediaStore: " + path1);
+                                            });
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                count = count + 1;
+                imageView.setVisibility(View.VISIBLE);
+                imageCount.setVisibility(View.VISIBLE);
+
+                Glide.with(this).load(resultUri).into(imageView);
+                imageCount.setText(String.valueOf(count));
+                cameraAdapter.notifyDataSetChanged();
+                Log.d("Orient", String.valueOf(deviceOrientation));
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(CameraActivity.this, CameraFolderActivity.class));
+                    }
+                });
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+
     }
 
     private Bitmap rotatedBitmap(Bitmap bitmap, int orientation) {
@@ -345,4 +501,10 @@ public class CameraActivity extends AppCompatActivity {
                 matrix, true);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(CameraActivity.this, MainActivity.class));
+        overridePendingTransition(0, 0);
+    }
 }

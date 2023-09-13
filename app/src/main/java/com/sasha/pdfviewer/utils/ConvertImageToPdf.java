@@ -93,8 +93,12 @@ public class ConvertImageToPdf {
     }
 
     public static void convertImageToPdf(ArrayList<ImageModel> imageList, String fileName, Context context) throws IOException{
-        String directoryPath = Environment.getExternalStorageDirectory() + "/ConvertedPdf/";
-        File file = new File(directoryPath + fileName + ".pdf");
+        String directoryPath = Environment.getExternalStorageDirectory() + "/Converted PDF/";
+        File file = new File( directoryPath +fileName+".pdf");
+
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
         PdfDocument pdf = new PdfDocument(new PdfWriter(file));
         // Create a Document
         Document document = new Document(pdf);
@@ -127,6 +131,23 @@ public class ConvertImageToPdf {
 
         // Close the document
         document.close();
+    }
+    public static void convertSingleImage(String path){
+        Bitmap bitmap1 = BitmapFactory.decodeFile(path);
+        android.graphics.pdf.PdfDocument pdfDocument = new android.graphics.pdf.PdfDocument();
+        android.graphics.pdf.PdfDocument.PageInfo pageInfo = new android.graphics.pdf.PdfDocument.PageInfo.Builder(
+                1920, 1080, 0).create();
+        android.graphics.pdf.PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+        page.getCanvas().drawBitmap(bitmap1, 0, 0, null);
+        pdfDocument.finishPage(page);
+        //String changeName = getWithoutExtension(name);
+        //String newPath = directoryPath  + ".pdf";
+        //File newFile = new File(newPath);
+        //pdfDocument.writeTo(new FileOutputStream(newFile));
+
+
+
+        pdfDocument.close();
     }
 
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary"
     tools:context=".tools.CameraFolderActivity">
 
     <RelativeLayout
         android:id="@+id/upper_layout"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -31,6 +31,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_arrow_back_24"
+                android:foreground="@drawable/foreground_effect"
                 android:id="@+id/chose_backBtn"
                 android:layout_gravity="start"
                 android:layout_marginEnd="15dp"
@@ -40,7 +41,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="5"
                 android:layout_height="wrap_content"
-                android:text="@string/select_file"
+                android:text="@string/select_image"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textAlignment="center"
@@ -54,28 +55,14 @@
                 android:gravity="end"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <ImageView
-                    android:layout_width="27dp"
-                    android:layout_height="27dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_baseline_delete_24"
-                    android:id="@+id/delete_items"
-                    app:tint="@color/Red_color" />
-                <ImageView
-                    android:layout_width="27dp"
-                    android:layout_height="27dp"
-                    android:layout_marginEnd="15dp"
-                    android:src="@drawable/share_icon"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/share_items"
-                    app:tint="@color/blue" />
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/select_all_icon"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/select_button"
+                    android:foreground="@drawable/click_effect"
                     app:tint="@color/blue" />
             </LinearLayout>
 
@@ -83,50 +70,148 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/upper_layout"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:id="@+id/recyclerView"/>
+        android:layout_below="@id/upper_layout"
+        android:layout_above="@id/bottom_options">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Continue"
-        android:background="@drawable/button_background2"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/white"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/continueButton"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/recyclerView"/>
+            <ImageView
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/blue_rounded"
+                android:padding="5dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_outline_add_box_24"
+                android:layout_marginBottom="35dp"
+                app:tint="@color/white"
+                android:contentDescription="@string/todo" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_centerInParent="true"
         android:indeterminate="true"
         android:indeterminateTint="@color/Red_color"
         android:visibility="gone"
         android:id="@+id/progressbar"/>
-    <androidx.appcompat.widget.AppCompatButton
+
+
+    <LinearLayout
+        android:id="@+id/bottom_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/convert"
-        android:background="@drawable/button_background2"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/white"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/convert_button"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@color/primaryDark"
+        android:layout_alignParentBottom="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:visibility="visible"
+            android:paddingTop="5dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:layout_marginEnd="55dp"
+                android:id="@+id/delete_button"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_outline_delete_24"
+                    android:id="@+id/delete_items"
+                    app:tint="@color/Red_color" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete"
+                    android:textColor="@color/Red_color"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:layout_marginEnd="55dp"
+                android:id="@+id/crop_button"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_baseline_crop_rotate_24"
+                    android:id="@+id/crop_icon"
+                    app:tint="@color/Red_color" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/crop_rotate"
+                    android:textColor="@color/Red_color"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:id="@+id/convert_btn"
+                android:foreground="@drawable/click_effect"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/converter_icon"
+                    android:layout_gravity="center_horizontal"
+                    app:tint="@color/Red_color"
+                    android:contentDescription="@string/todo" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/convert_button"
+                    android:textColor="@color/Red_color"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/josefont"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

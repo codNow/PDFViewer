@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,15 +21,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.sasha.pdfviewer.R;
-import com.sasha.pdfviewer.adapter.AllPdfAdapter;
+import com.sasha.pdfviewer.adapter.CombineFolderAdapter;
 import com.sasha.pdfviewer.model.PdfModel;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MergeFolderActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<PdfModel> mediaList = new ArrayList<>();
-    private AllPdfAdapter pdfAdapter;
+    private CombineFolderAdapter pdfAdapter;
     private Toolbar toolbar;
     private EditText search_text;
     private ProgressBar progressBar;
@@ -57,18 +59,54 @@ public class MergeFolderActivity extends AppCompatActivity {
             }
         });
 
-        progressBar.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            loadAllPdf();
 
-        new CountDownTimer(1000, 1000){
-            @Override
-            public void onTick(long l) {
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q){
+            getPdfFileForBelowB();
+
+        }
+
+
+    }
+    private void getPdfFileForBelowB(){
+        recyclerView.setHasFixedSize(true);
+        pdfAdapter = new CombineFolderAdapter(getApplicationContext(), mediaList);
+        recyclerView.setAdapter(pdfAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false));
+        PdfModel item ;
+        String file_ext = ".pdf";
+        String folderName = "Combined PDF";
+
+        try{
+            String folderPath =
+                    Environment.getExternalStorageDirectory()
+                            .getAbsolutePath() +"/"+ folderName;
+
+            File dir = new File(folderPath);
+
+            File listPdf[] = dir.listFiles();
+
+            if (listPdf != null){
+                for (int i = 0; i < listPdf.length; i++){
+                    File pdf_file = listPdf[i];
+
+                    if (pdf_file.getName().endsWith(file_ext)){
+                        item = new PdfModel();
+                        item.setTitle(pdf_file.getName());
+                        item.setPath(pdf_file.getPath());
+
+                        mediaList.add(item);
+                    }
+                }
             }
-            @Override
-            public void onFinish() {
-                loadAllPdf();
-                progressBar.setVisibility(View.GONE);
-            }
-        }.start();
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
 
     }
@@ -76,7 +114,7 @@ public class MergeFolderActivity extends AppCompatActivity {
         ArrayList<String> strings = new ArrayList<>();
         mediaList = loadFiles(this);
         recyclerView.setHasFixedSize(true);
-        pdfAdapter = new AllPdfAdapter(getApplicationContext(), mediaList);
+        pdfAdapter = new CombineFolderAdapter(getApplicationContext(), mediaList);
         recyclerView.setAdapter(pdfAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
@@ -123,7 +161,7 @@ public class MergeFolderActivity extends AppCompatActivity {
 
                 boolean isSelected = false;
                 PdfModel modelPdf = new PdfModel(pdfId, title, path, convertSize(size), date, isSelected);
-                if (subString.contains("MergedPdf")) {
+                if (subString.contains("Combined PDF")) {
                     arrayList.add(modelPdf);
                     progressBar.setVisibility(View.GONE);
 

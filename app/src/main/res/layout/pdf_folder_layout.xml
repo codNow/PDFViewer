@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parentRelative"
+    >
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="5dp"
+        android:paddingTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:stretchMode="columnWidth"
+        android:numColumns="auto_fit"
+        android:scaleType="fitXY"
+        android:src="@drawable/new_folder2"
+        android:id="@+id/imageView"
+        app:tint="@color/folder_color" />
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_baseline_check_circle_24"
+        android:id="@+id/center_image"
+        app:tint="@color/white" />
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_dot_vertical"
+        android:layout_alignEnd="@id/imageView"
+        android:paddingTop="2dp"
+        android:paddingEnd="-5dp"
+        android:id="@+id/option_btn"
+        android:visibility="gone"
+        app:tint="@color/text_color4" />
+
+    <TextView
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="Foldeŕ"
+        android:ellipsize="end"
+        android:paddingTop="5dp"
+        android:maxLines="2"
+        android:textStyle="bold"
+        android:textSize="11sp"
+        android:fontFamily="@font/montserrat"
+        android:textAlignment="center"
+        android:layout_below="@id/imageView"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/folderName"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_of_files"
+        android:textColor="@color/image_color"
+        android:textSize="11sp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/montserrat"
+        android:layout_below="@id/folderName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-2dp"
+        android:paddingBottom="10dp"
+        android:id="@+id/no_file"/>
+
+    <View
+        android:id="@+id/choose_card"
+        android:layout_width="80dp"
+        android:layout_height="105dp"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/choose_background"
+        android:visibility="visible" />
+
+
+</RelativeLayout>

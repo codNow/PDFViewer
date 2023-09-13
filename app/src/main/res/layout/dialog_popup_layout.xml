@@ -4,9 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
-    android:background="@drawable/popup_background"
-    android:id="@+id/layoutDialogContainer"
-    >
+    android:background="@drawable/popup_background">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +26,7 @@
                 android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:textColor="@color/white"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:fontFamily="@font/montserrat"
                 android:textStyle="bold" />
             <ImageView
@@ -47,9 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_below="@id/first_linear"
-            android:background="@color/primary"
-            android:id="@+id/second_linear">
+            android:background="@color/primary">
 
             <TextView
                 android:layout_width="match_parent"
@@ -59,10 +55,10 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/josefont"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="18sp"
+                android:layout_marginTop="25dp"
                 android:layout_marginEnd="30dp"
                 android:textColor="@color/text_color"
-                android:textSize="16sp"/>
+                android:textSize="13sp"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,6 +78,7 @@
                 android:layout_marginStart="30dp"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
+                android:textSize="13sp"
                 android:fontFamily="@font/josefont"
                 android:id="@+id/question_text"/>
 
@@ -105,7 +102,7 @@
                     android:fontFamily="@font/josefont"
                     android:textAllCaps="false"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/Red_color"
                     android:textSize="16sp" />
                 <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="0dp"
@@ -119,7 +116,7 @@
                     android:fontFamily="@font/josefont"
                     android:textAllCaps="false"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/blue"
                     android:textSize="16sp" />
 
             </LinearLayout>

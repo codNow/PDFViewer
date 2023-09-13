@@ -1,9 +1,8 @@
 package com.sasha.pdfviewer.view;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,30 +10,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,7 +42,6 @@ import com.sasha.pdfviewer.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdapter.OnFileLongClick, PdfAdapter.OnItemClicks {
 
@@ -109,19 +101,21 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
 
         buttonListener();
 
+        loadAllPdf();
+
 
         progressBar.setVisibility(View.VISIBLE);
-        search_layout.setVisibility(View.GONE);
-        new CountDownTimer(1500, 1000){
+        search_layout.setVisibility(View.VISIBLE);
+        new CountDownTimer(700, 500){
 
             @Override
             public void onTick(long l) {
             }
             @Override
             public void onFinish() {
-                loadAllPdf();
+
                 progressBar.setVisibility(View.GONE);
-                search_layout.setVisibility(View.VISIBLE);
+
             }
         }.start();
         search_text.addTextChangedListener(new TextWatcher() {
@@ -152,6 +146,8 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
                     //After checking all items change button text
                     selectButton.setImageDrawable(getDrawable(R.drawable.deselect_all_icon));
                     isSelectAll = true;
+                    delete_items.setColorFilter(getColor(R.color.Red_color));
+                    share_items.setColorFilter(getColor(R.color.Red_color));
                     pdfAdapter.notifyDataSetChanged();
 
                 } else {
@@ -160,6 +156,8 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
                     deselectAll();
                     isSelectAll = false;
                     //After checking all items change button text
+                    delete_items.setColorFilter(getColor(R.color.image_color));
+                    share_items.setColorFilter(getColor(R.color.image_color));
                     selectButton.setImageDrawable(getDrawable(R.drawable.select_all_icon));
                     pdfAdapter.notifyDataSetChanged();
                 }
@@ -169,16 +167,22 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
             @Override
             public void onClick(View view) {
                 ArrayList<PdfModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+
                 for (PdfModel pdfModel : selectedFilePaths) {
                     String filePath = pdfModel.getPath();
-                    String id = pdfModel.getId();
                     File file = new File(filePath);
-                    uris.add(Uri.parse(filePath));
+                    Uri uri = FileProvider.getUriForFile(AllPdfFileViewActivity.this, "com.sasha.pdfviewer.fileprovider", file);
+
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("application/pdf");
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // Grant read permission
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
                     startActivity(Intent.createChooser(intent, "Share"));
+
+                    Log.d("paths", uri.getPath());
+
                 }
 
             }
@@ -187,6 +191,10 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
         delete_items.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                ArrayList<PdfModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+
+                //new DeleteFilesTask().execute(selectedFilePaths.toArray(new PdfModel[selectedFilePaths.size()]));
 
                 if (count > 0) {
                     Dialog alertDialog = new Dialog(view.getRootView().getContext());
@@ -231,6 +239,10 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
                                         recyclerView.getAdapter().notifyItemRemoved(position);
                                         count = 0;
                                         updateCount(count);
+                                        deselectAll();
+                                        isSelectMode = false;
+                                        RemoveContextualActionMode();
+                                        pdfAdapter.setSelectMode(false);
 
                                     }
 
@@ -291,9 +303,14 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
     private void updateCount(int counts) {
         if (counts == 0){
             selectedText.setText("Select Files");
+            delete_items.setColorFilter(getColor(R.color.image_color));
+            share_items.setColorFilter(getColor(R.color.image_color));
+
         }
         else{
             selectedText.setText(counts + " Selected");
+            delete_items.setColorFilter(getColor(R.color.Red_color));
+            share_items.setColorFilter(getColor(R.color.Red_color));
         }
 
     }
@@ -308,7 +325,6 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
         pdfAdapter.updateSearchList(searchList);
     }
     private void loadAllPdf() {
-
         mediaList = FileUtils.allPdfFile(this);
         recyclerView.setHasFixedSize(true);
         pdfAdapter = new PdfAdapter(getApplicationContext(), mediaList, strings,  this, this);
@@ -316,9 +332,12 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         isSelectMode = pdfAdapter.isSelectMode();
         ViewCompat.setNestedScrollingEnabled(recyclerView, true);
-    }
 
-  /*  @Override
+
+
+    }
+/*
+  *//*  @Override
     public boolean onLongClick(View v) {
         isContextTualModeEnabled = true;
         search_layout.setVisibility(View.GONE);
@@ -334,7 +353,7 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
         for (PdfModel item : mediaList) {
             item.setSelected(true);
             if (item.isSelected()){
-                count = count + 1;
+                count = mediaList.size();
                 updateCount(count);
             }
         }
@@ -492,17 +511,31 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
     public void onItemClick(PdfModel pdfModel, int position) {
         isSelectMode = true;
         if (pdfModel.isSelected()){
+            selectList.add(mediaList.get(position));
             count = count + 1;
             updateCount(count);
+
+            if (count > 0){
+                delete_items.setColorFilter(getColor(R.color.Red_color));
+                share_items.setColorFilter(getColor(R.color.Red_color));
+            }
+
+            Log.d("List", String.valueOf(selectList.size()));
+
+
+
         }
         else if (!pdfModel.isSelected()){
             count = count - 1;
             updateCount(count);
         }
         else {
+            selectList.remove(mediaList.get(position));
             count = 0;
             updateCount(count);
+            delete_items.setColorFilter(getColor(R.color.image_color));
         }
+
     }
 
     @Override
@@ -516,7 +549,10 @@ public class AllPdfFileViewActivity extends AppCompatActivity implements PdfAdap
             if (pdfModel.isSelected()){
                 count = count +1;
                 updateCount(count);
+
             }
+
+
         }
         else{
             search_layout.setVisibility(View.VISIBLE);

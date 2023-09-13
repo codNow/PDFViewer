@@ -35,6 +35,7 @@ import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.PdfUtils;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,12 +109,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                             @Override
                             public void onClick(View v) {
                                 startCovertPdf(view, title, path, holder.checkboxImage);
-                                File destiny = new File(Environment.getExternalStorageDirectory() +
-                                        "/ConvertWord/" + title);
-
-                                if (!destiny.getParentFile().exists()){
-                                    destiny.getParentFile().mkdir();
-                                }
                                 dialog.dismiss();
 
                             }
@@ -159,7 +154,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
         }
 
     }
-    private void startCovertPdf(View view, String title, String path, ImageView checkBoxImage) {
+    private void startCovertPdf(View view, String title, String path, ImageView checkbox) {
         Dialog dialog = new Dialog(view.getRootView().getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.progress_dialog);
@@ -170,7 +165,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
         /*File destiny = new File(Environment.getExternalStorageDirectory() +
                 "/ConvertWord/");*/
         String dest = Environment.getExternalStorageDirectory() +
-                "/Word Folder/" + title;
+                "/Text Doc/" + title;
         File destinyFile = new File(dest);
 
         dialog.show();
@@ -188,8 +183,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                 @Override
                 public void onFinish() {
                     try {
-                        PdfUtils.convertToText(path, dest  + ".doc");
-                        Toast.makeText(context, R.string.word_success_toast, Toast.LENGTH_SHORT).show();
+                        PdfUtils.convertToText(path, dest + ".doc");
+
+                        //Toast.makeText(context, R.string.word_success_toast, Toast.LENGTH_SHORT).show();
                         Dialog successDialog = new Dialog(view.getRootView().getContext());
                         successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         successDialog.setContentView(R.layout.upload_done_layout);
@@ -205,8 +201,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                         word_icon = successDialog.findViewById(R.id.done_icon);
 
                         textView1.setText(R.string.word_convert_success);
-                        textView2.setText(dest+title);
-                        word_icon.setImageDrawable(context.getDrawable(R.drawable.word_icon));
+                        textView2.setText(dest);
+                        word_icon.setImageDrawable(context.getDrawable(R.drawable.word_doc_icon));
                         textView3.setText(R.string.word_question);
 
                         noButton.setOnClickListener(new View.OnClickListener() {
@@ -216,7 +212,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                                 Intent intent = new Intent(context, ToolsActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 context.startActivity(intent);
-                                checkBoxImage.setVisibility(View.GONE);
+                                checkbox.setVisibility(View.GONE);
                             }
                         });
                         yesButton.setOnClickListener(new View.OnClickListener() {
@@ -224,7 +220,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                             public void onClick(View view) {
                                 successDialog.dismiss();
                                 dialog.dismiss();
-                                checkBoxImage.setVisibility(View.GONE);
+                                checkbox.setVisibility(View.GONE);
                             }
 
                         });
@@ -232,6 +228,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
                         successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         successDialog.getWindow().setGravity(Gravity.TOP);
+                        dialog.dismiss();
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -245,6 +242,11 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
             }.start();
         }
 
+    }
+
+    private void popupSuccessDialog(View view,String path, String dest, String title) {
+        SuccessDialogUtil.showSuccessDialog(view, dest, title, "Convert Successfully",
+                "Do you want to convert another file", R.drawable.word_doc_icon );
     }
 
     @Override

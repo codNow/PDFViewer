@@ -260,7 +260,7 @@ public class PDFViewerActivity extends AppCompatActivity implements OnLoadComple
             destiny.createNewFile();
         }
         else {
-            Toast.makeText(this, "This file already added to recent file", Toast.LENGTH_SHORT).show();
+            Log.d("TAG", "Already in Recent");
         }
 
         FileChannel source = null;

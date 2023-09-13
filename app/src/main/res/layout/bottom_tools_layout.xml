@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@drawable/bottom_popup_background"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical"
+
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pdf_tools"
+                android:textSize="22sp"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/montserrat" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end"
+                >
+                <ImageView
+                    android:id="@+id/back_button"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="35dp"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    app:tint="@color/image_color" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            >
+            <LinearLayout
+                android:id="@+id/pdfToWord"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_baseline_text_snippet_24"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pdftoword"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/newPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_outline_insert_drive_file_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newpdf"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pdftoImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_outline_image_24"
+                    app:tint="@color/white" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pdftoimage"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            >
+            <LinearLayout
+                android:id="@+id/splitPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_baseline_call_split_24"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/splitpdf"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/compressPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_baseline_merge_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/combinepdf"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/imagetoPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_baseline_insert_drive_file_24"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/imagetopdf"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+            <LinearLayout
+                android:id="@+id/encryptPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_outline_lock_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/protect"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/unlockPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_baseline_lock_open_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unlock"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/waterMark"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_tools_bg"
+                    android:src="@drawable/ic_outline_bookmarks_24"
+                    app:tint="@color/white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/water_mark"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

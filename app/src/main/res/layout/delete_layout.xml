@@ -4,8 +4,9 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/popup_background"
-    android:id="@+id/layoutDialogContainer"
-    android:layout_margin="5dp"
+    android:layout_marginStart="25dp"
+    android:layout_marginEnd="25dp"
+    android:layout_marginTop="5dp"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +29,7 @@
                 android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:textColor="@color/Red_color"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:fontFamily="@font/montserrat"
                 android:textStyle="bold" />
             <ImageView
@@ -47,9 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_below="@id/first_linear"
-            android:background="@color/primary"
-            android:id="@+id/second_linear">
+            android:background="@color/primary">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -60,16 +59,16 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/montserrat"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="15sp"
+                android:layout_marginTop="25dp"
                 android:layout_marginEnd="30dp"
                 android:textColor="@color/text_color"
-                android:textSize="16sp"/>
+                android:textSize="13sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="15dp"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -85,7 +84,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/Red_color"
                     android:textSize="14sp" />
                 <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="0dp"
@@ -100,7 +99,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginEnd="40dp"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/blue"
                     android:textSize="16sp" />
 
             </LinearLayout>

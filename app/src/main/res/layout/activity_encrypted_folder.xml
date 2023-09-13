@@ -13,7 +13,7 @@
         android:id="@+id/toolbar"
         android:paddingEnd="20dp"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance"
-        android:background="@color/primaryDark">
+        android:background="@color/primary">
 
     </androidx.appcompat.widget.Toolbar>
     <androidx.recyclerview.widget.RecyclerView
@@ -29,8 +29,23 @@
         android:layout_height="100dp"
         android:src="@drawable/empty_icon"
         android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:id="@+id/empty_icon"/>
+        android:visibility="invisible"
+        android:id="@+id/empty_icon"
+        app:tint="@color/image_color" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lock PDF"
+        android:textAllCaps="false"
+        android:textColor="@color/text_color3"
+        android:background="@drawable/button_background3"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_below="@id/empty_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:visibility="invisible" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressbar"

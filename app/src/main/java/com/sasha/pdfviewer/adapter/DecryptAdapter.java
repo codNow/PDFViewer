@@ -10,6 +10,7 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
 import com.sasha.pdfviewer.utils.PdfUtils;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
     private Context context;
     private ArrayList<PdfModel> pdfModelArrayList;
     private ViewHolder holder;
-    private boolean isError = false;
+
 
     public DecryptAdapter(Context context, ArrayList<PdfModel> pdfModelArrayList) {
         this.context = context;
@@ -99,12 +101,13 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
                     dialog.setContentView(R.layout.password_layout);
                     EditText editText;
                     Button cancelBtn, okBtn;
-                    TextView question_text, textViewTitle, titleText;
+                    TextView question_text, textViewTitle, titleText, msg_text;
                     titleText = dialog.findViewById(R.id.textTitle);
                     titleText.setText(R.string.removed_title);
                     editText = dialog.findViewById(R.id.pwdText);
                     textViewTitle = dialog.findViewById(R.id.advice_text);
                     textViewTitle.setText(R.string.enter_password_question);
+                    msg_text = dialog.findViewById(R.id.msg_text);
                     cancelBtn = dialog.findViewById(R.id.buttonNo);
                     okBtn = dialog.findViewById(R.id.buttonYes);
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,15 +123,21 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
                         public void onClick(View v) {
                             holder.checkboxImage.setVisibility(View.GONE);
                             holder.option_btn.setVisibility(View.VISIBLE);
+                            String pwd = editText.getText().toString();
+
                             String pwdText = editText.getText().toString();
                             String destiny = Environment.getExternalStorageDirectory() +
-                                    "/Unlocked Folder/" + title;
+                                    "/Unlocked PDF/" + title;
                             File dest = new File(destiny);
                             dialog.show();
 
                             if (!dest.getParentFile().exists()){
                                 dest.getParentFile().mkdir();
                             }
+                            if (TextUtils.isEmpty(editText.getText().toString())){
+                                Toast.makeText(context, "please enter your password", Toast.LENGTH_SHORT).show();
+                            }
+                            
                             Dialog loadingDialog = new Dialog(v.getRootView().getContext());
                             loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             loadingDialog.setContentView(R.layout.progress_dialog);
@@ -146,17 +155,22 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
                                 @Override
                                 public void onFinish() {
                                     try {
-                                        EncryptDecrypt.decrypt(filePath, destiny+".pdf", pwdText);
+                                        String dest = destiny + ".pdf";
+                                        EncryptDecrypt.decrypt(filePath, dest, pwdText);
                                         popupSuccessDialog(view, filePath, destiny,title);
                                     } catch (BadPasswordException e) {
                                         loadingDialog.dismiss();
                                         dialog.show();
+                                        msg_text.setVisibility(View.VISIBLE);
                                         // Incorrect password, show error message to user
-                                        Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, R.string.incorrect_passwored, Toast.LENGTH_SHORT).show();
                                         return;
                                     } catch (Exception e) {
+                                        loadingDialog.dismiss();
+                                        dialog.show();
+                                        msg_text.setVisibility(View.VISIBLE);
                                         // Other error occurred, show error message to user
-                                        Toast.makeText(context, "Error decrypting PDF", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, R.string.incorrect_passwored, Toast.LENGTH_SHORT).show();
                                         return;
                                     }
                                     loadingDialog.dismiss();
@@ -181,57 +195,12 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
     }
 
 
-    private void unlockPdf(int position, View v, String filePath, String title, String pwdText) {
-        Dialog dialog = new Dialog(v.getRootView().getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.progress_dialog);
-        dialog.setCanceledOnTouchOutside(false);
-        TextView textView = dialog.findViewById(R.id.loading_text);
-        textView.setText(R.string.unlock_progress);
-        dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
-        String destiny = Environment.getExternalStorageDirectory() +
-                "/Unlocked Folder/" + title;
-        File dest = new File(destiny);
-        dialog.show();
 
-        if (!dest.getParentFile().exists()){
-            dest.getParentFile().mkdir();
-            decryptPdfFile(v, filePath, destiny, title, pwdText, dialog);
-        }
-        else{
-            decryptPdfFile(v, filePath, destiny, title, pwdText, dialog);
-
-        }
-    }
-
-    private void decryptPdfFile(View v, String filePath, String destiny, String title, String pwdText, Dialog dialog) {
-        new CountDownTimer(2500, 1500){
-            @Override
-            public void onTick(long l) {
-            }
-
-            @Override
-            public void onFinish() {
-                try {
-                    EncryptDecrypt.decrypt(filePath, destiny+".pdf", pwdText);
-                    Toast.makeText(context, "Password Removed successfully", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    popupSuccessDialog(v, filePath, destiny, title);
-                }
-                catch (BadPasswordException e){
-                    e.printStackTrace();
-                    Toast.makeText(context, "Incorrect Password", Toast.LENGTH_SHORT).show();
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                    Toast.makeText(context, "Wrong Password, Please try again", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            }
-        }.start();
-    }
-
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void popupSuccessDialog(View view, String filPath, String dest, String title){
+        //SuccessDialogUtil.showSuccessDialog(view, dest, title, "Unlock Successfully",
+                //"Do you want to unlock another file", R.drawable.un_un );
+
         Dialog successDialog = new Dialog(view.getRootView().getContext());
         successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         successDialog.setContentView(R.layout.upload_done_layout);
@@ -248,7 +217,8 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
 
         textView1.setText(R.string.unlocked_success);
         textView2.setText(dest+title);
-        word_icon.setImageDrawable(context.getDrawable(R.drawable.unlock_icon2));
+        word_icon.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_lock_open_24));
+        word_icon.setColorFilter(context.getColor(R.color.blue));
         textView3.setText(R.string.unlock_question);
 
         noButton.setOnClickListener(new View.OnClickListener() {
@@ -302,7 +272,6 @@ public class DecryptAdapter extends RecyclerView.Adapter<DecryptAdapter.ViewHold
             checkBox = itemView.findViewById(R.id.recent_checkbox);
             imageView = itemView.findViewById(R.id.imageView);
             checkboxImage = itemView.findViewById(R.id.checking);
-            pdfFile = itemView.findViewById(R.id.pdf_layout_id);
             pdfView = itemView.findViewById(R.id.pdfView);
         }
     }

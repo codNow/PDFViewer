@@ -35,6 +35,8 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.google.android.material.snackbar.Snackbar;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
+import com.sasha.pdfviewer.utils.PdfUtils;
+import com.sasha.pdfviewer.utils.SnakeBarUtils;
 import com.sasha.pdfviewer.view.AllPdfFileViewActivity;
 import com.sasha.pdfviewer.view.PDFViewerActivity;
 
@@ -100,14 +102,18 @@ public class MergedAdapter extends RecyclerView.Adapter<MergedAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         PdfModel modelPdf = pdfModels.get(position);
-        String title = modelPdf.getTitle();
         String path = modelPdf.getPath();
 
-        String name = modelPdf.getTitle().substring(0, 1).toUpperCase() + modelPdf.getTitle().substring(1);
-
-        holder.pdfTitle.setText(name);
+        String title = modelPdf.getTitle();
+        if (title != null && !title.isEmpty()) {
+            String name = title.substring(0, 1).toUpperCase() + title.substring(1);
+            holder.pdfTitle.setText(name);
+        } else {
+            holder.pdfTitle.setText(title);
+            // handle the case where title is null or empty
+        }
         //holder.pdfSize.setText(modelPdf.getSize());
-        //holder.pdfPath.setText(modelPdf.getPdfPath());
+        holder.pdfPath.setText(modelPdf.getPath());
         String filePath = modelPdf.getPath();
         File file = new File(filePath);
         String parentPath = file.getParentFile().getName();
@@ -122,29 +128,36 @@ public class MergedAdapter extends RecyclerView.Adapter<MergedAdapter.ViewHolder
             @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View view) {
-                modelPdf.setSelected(!modelPdf.isSelected());
-                holder.checkboxImage.setVisibility(View.VISIBLE);
-                //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
-                if (modelPdf.isSelected()){
-                    modelPdf.setSelected(true);
+
+                if (PdfUtils.isFileLock(file)) {
+                    modelPdf.setSelected(!modelPdf.isSelected());
                     holder.checkboxImage.setVisibility(View.VISIBLE);
-                    holder.option_btn.setVisibility(View.GONE);
-                    holder.checkBox.setChecked(true);
-                    if (!pdfModels.contains(modelPdf)){
-                        pdfModels.add(modelPdf);
+                    //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
+                    if (modelPdf.isSelected()) {
+                        modelPdf.setSelected(true);
+                        holder.checkboxImage.setVisibility(View.VISIBLE);
+                        holder.option_btn.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(true);
+                        if (!pdfModels.contains(modelPdf)) {
+                            pdfModels.add(modelPdf);
 
+                        }
+                    } else {
+                        holder.checkboxImage.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(false);
+                        holder.option_btn.setVisibility(View.VISIBLE);
+                        //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
                     }
-                }
-                else{
-                    holder.checkboxImage.setVisibility(View.GONE);
-                    holder.checkBox.setChecked(false);
-                    holder.option_btn.setVisibility(View.VISIBLE);
-                    //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
-                }
-                if (onItemClicks != null){
-                    onItemClicks.onItemClick(modelPdf, position);
-                }
+                    if (onItemClicks != null) {
+                        onItemClicks.onItemClick(modelPdf, position);
+                    }
 
+                }
+                else {
+                    //Snackbar.make(view, R.string.file_not_protected, Snackbar.LENGTH_SHORT).show();
+                    SnakeBarUtils.showSnackbar(view, "This File is Protected", Snackbar.LENGTH_SHORT);
+
+                }
             }
         });
         if (modelPdf.isSelected()){
@@ -245,7 +258,7 @@ public class MergedAdapter extends RecyclerView.Adapter<MergedAdapter.ViewHolder
             imageView = itemView.findViewById(R.id.imageView);
             pdfView = itemView.findViewById(R.id.pdfView);
             checkboxImage = itemView.findViewById(R.id.checking);
-            pdf_layout = itemView.findViewById(R.id.deltaRelative);
+
 
         }
 

@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -83,6 +84,17 @@ public class PdfUtils {
             // The PDF file is not convertible to text
         }*/
     }
+    public static boolean isFileLock(File filePath){
+        try{
+            new PdfRenderer(ParcelFileDescriptor.open(filePath, ParcelFileDescriptor.MODE_READ_ONLY));
+            return true;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean isFileNotLock(File pdfPath){
         try {
             new PdfRenderer(ParcelFileDescriptor.open(pdfPath, ParcelFileDescriptor.MODE_READ_ONLY));
@@ -260,6 +272,65 @@ public class PdfUtils {
         out.close();
         sourceFile.delete();
     }
+
+    public static int getFileNumber(String folderName) {
+
+        File dir = new File(folderName);
+
+        int count = 0;
+        File listPdf[] = dir.listFiles();
+
+        if (listPdf != null){
+            for (int i = 0; i < listPdf.length; i++){
+                File pdf_file = listPdf[i];
+
+                if (pdf_file.getName().endsWith(".pdf")){
+                    count++;
+
+                }
+            }
+        }
+        return count;
+    }
+    public static int getWordNumber(String folderName) {
+
+        File dir = new File(folderName);
+
+        int count = 0;
+        File listPdf[] = dir.listFiles();
+
+        if (listPdf != null){
+            for (int i = 0; i < listPdf.length; i++){
+                File pdf_file = listPdf[i];
+
+                if (pdf_file.getName().endsWith(".doc")){
+                    count++;
+
+                }
+            }
+        }
+        return count;
+    }
+    public static int getImageNumber(String folderName) {
+
+        File dir = new File(folderName);
+
+        int count = 0;
+        File listPdf[] = dir.listFiles();
+
+        if (listPdf != null){
+            for (int i = 0; i < listPdf.length; i++){
+                File pdf_file = listPdf[i];
+
+                if (pdf_file.getName().endsWith(".jpg")){
+                    count++;
+
+                }
+            }
+        }
+        return count;
+    }
+
 
 
 }

@@ -4,9 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
-    android:background="@drawable/popup_background"
-    android:id="@+id/layoutDialogContainer"
-    >
+    android:background="@drawable/popup_background">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,8 +46,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_below="@id/first_linear"
-            android:background="@color/primary"
-            android:id="@+id/second_linear">
+            android:background="@color/primary">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -85,7 +82,7 @@
                     android:fontFamily="@font/josefont"
                     android:textAllCaps="false"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/Red_color"
                     android:textSize="16sp" />
                 <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="0dp"
@@ -99,7 +96,7 @@
                     android:fontFamily="@font/josefont"
                     android:textAllCaps="false"
                     android:background="@drawable/button_primary_dark"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/blue"
                     android:textSize="16sp" />
 
             </LinearLayout>

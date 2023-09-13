@@ -4,10 +4,10 @@
 
 
     <solid
-        android:color="@color/image_color"
+        android:color="@color/Red_color"
         />
     <stroke
-        android:color="@color/image_color"
+        android:color="@color/primaryDark"
         android:width="0.5dp"/>
     <corners
         android:radius="55dp"/>

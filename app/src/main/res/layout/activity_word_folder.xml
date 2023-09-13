@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary"
     tools:context=".folderList.WordFolderActivity">
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -71,7 +72,7 @@
                     android:layout_height="25dp"
                     android:adjustViewBounds="true"
                     android:visibility="gone"
-                    android:src="@drawable/ic_outline_cancel_24"
+                    android:src="@drawable/ic_baseline_close_24"
                     android:padding="2dp"
                     app:tint="@color/image_color" />
                 />
@@ -117,5 +118,27 @@
         android:indeterminateTint="@color/Red_color" />
 
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/empty_icon"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:id="@+id/empty_icon"
+        app:tint="@color/image_color" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Extract Text"
+        android:textAllCaps="false"
+        android:textColor="@color/text_color3"
+        android:background="@drawable/button_background3"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_below="@id/empty_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:visibility="invisible" />
 
 </RelativeLayout>

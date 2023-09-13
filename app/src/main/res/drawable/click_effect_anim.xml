@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/crop_background" />
+            <gradient android:type="radial"
+                android:startColor="@color/crop_tools_background"
+                android:centerColor="@color/crop_tools_background"
+                android:endColor="@android:color/transparent"
+                android:gradientRadius="100dp" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/crop_tools_background" />
+            <gradient android:type="radial"
+                android:startColor="@color/crop_tools_background"
+                android:centerColor="@color/crop_tools_background"
+                android:endColor="@android:color/transparent"
+                android:gradientRadius="100dp" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+</selector>

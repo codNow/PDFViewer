@@ -30,6 +30,7 @@ import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 import com.sasha.pdfviewer.utils.WaterMarkUtil;
 
 import java.io.File;
@@ -152,7 +153,7 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
         textView.setText(R.string.mark_progress);
         dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
         String destiny = Environment.getExternalStorageDirectory() +
-                "/Watermark Folder/" + title;
+                "/Marked PDF/" + title;
         File dest = new File(destiny);
         dialog.show();
 
@@ -186,48 +187,9 @@ public class WaterMarkAdapter extends RecyclerView.Adapter<WaterMarkAdapter.View
 
     }
 
-    private void popupSuccessDialog(View v, String filePath, String destiny, String title) {
-        Dialog successDialog = new Dialog(v.getRootView().getContext());
-        successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        successDialog.setContentView(R.layout.upload_done_layout);
-        TextView textView1, textView2, textView3;
-        Button noButton, yesButton;
-        ImageView word_icon;
-
-        textView1 = successDialog.findViewById(R.id.successText);
-        textView2 = successDialog.findViewById(R.id.pathText);
-        textView3 = successDialog.findViewById(R.id.question_text);
-        noButton = successDialog.findViewById(R.id.no_btn);
-        yesButton = successDialog.findViewById(R.id.yes_btn);
-        word_icon = successDialog.findViewById(R.id.done_icon);
-
-        textView1.setText(R.string.mark_success);
-        textView2.setText(destiny+title);
-        word_icon.setImageDrawable(context.getDrawable(R.drawable.water_mark_icon));
-        textView3.setText(R.string.mark_question);
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                Intent intent = new Intent(context, ToolsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                //checkBoxImage.setVisibility(View.GONE);
-            }
-        });
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                //checkBoxImage.setVisibility(View.GONE);
-            }
-
-        });
-        successDialog.show();
-        successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        successDialog.getWindow().setGravity(Gravity.TOP);
+    private void popupSuccessDialog(View view, String filePath, String destiny, String title) {
+        SuccessDialogUtil.showSuccessDialog(view, destiny, title, "WaterMark Successfully",
+                "Do you want to mark another file", R.drawable.ic_outline_bookmarks_24 );
     }
 
     @Override

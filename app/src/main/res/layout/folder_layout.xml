@@ -1,90 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_marginTop="15dp"
-    android:layout_height="wrap_content">
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content"
+
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/first_linear"
+        android:background="@drawable/folder_background"
+        android:paddingStart="12dp"
+        android:paddingEnd="2dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/folder_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/new_folder2"
-            />
-
-        <LinearLayout
-            android:id="@+id/linear"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/pdfView"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="10dp"
+            android:layout_gravity="center_vertical"
+            >
+            <ImageView
+                android:id="@+id/folder_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/new_folder2"
+                app:tint="@color/Red_color" />
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/folderName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/folder_name"
-                android:textSize="16sp"
+                android:textSize="14sp"
+                android:ellipsize="end"
                 android:maxLines="1"
-                android:textStyle="bold"
-                android:textColor="@color/text_color3"
-                android:fontFamily="@font/josefont"
-                android:id="@+id/folderName"/>
-
-            <LinearLayout
+                android:fontFamily="@font/josefont"/>
+            <TextView
+                android:id="@+id/no_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_baseline_insert_drive_file_24"
-                    android:id="@+id/file_imageView"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="@string/_2022"
-                    android:fontFamily="@font/josefont"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textColor="@color/accent"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:id="@+id/no_file"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:layout_marginStart="15dp"
-                    android:id="@+id/pdf_path"/>
-
-            </LinearLayout>
-
+                android:text="56 Files"/>
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:layout_marginEnd="40dp"
-            android:id="@+id/menu_option"
-            app:tint="@color/purple_500" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/option_btn"
+                app:tint="@color/image_color" />
+        </RelativeLayout>
 
     </LinearLayout>
+
+
 
 
 </RelativeLayout>

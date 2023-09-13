@@ -13,7 +13,7 @@
         android:id="@+id/toolbar"
         android:paddingEnd="20dp"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance"
-        android:background="@color/primaryDark">
+        android:background="@color/primary">
     </androidx.appcompat.widget.Toolbar>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

@@ -7,7 +7,7 @@
         android:color="@color/image_color"
         android:width="0.5dp"/>
     <corners
-        android:radius="2dp"/>
+        android:radius="10dp"/>
 
 
 </shape>

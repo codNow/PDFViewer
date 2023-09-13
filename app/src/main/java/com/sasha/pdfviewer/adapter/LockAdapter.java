@@ -36,6 +36,7 @@ import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,11 +68,11 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
 
         holder.pdfTitle.setText(modelPdf.getTitle());
         holder.pdfSize.setText(modelPdf.getSize());
-        //holder.pdfPath.setText(modelPdf.getPdfPath());
+        //holder.pdfPath.setText(modelPdf.getPath());
         String filePath = modelPdf.getPath();
         File file = new File(filePath);
         String parentPath = file.getParentFile().getName();
-       // holder.pdfPath.setText(parentPath);
+        holder.pdfPath.setText(parentPath);
 
         
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +147,7 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
         textView.setText(R.string.encrypted_dialog);
         dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
         File destiny = new File(Environment.getExternalStorageDirectory() +
-                "/Locked Folder/" + title);
+                "/Locked PDF/" + title);
 
         if (!destiny.getParentFile().exists()){
             destiny.getParentFile().mkdir();
@@ -191,43 +192,9 @@ public class LockAdapter extends RecyclerView.Adapter<LockAdapter.ViewHolder> {
     }
 
     private void popupDoneDialog(View v, File destiny, String title) {
-        Dialog successDialog = new Dialog(v.getRootView().getContext());
-        successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        successDialog.setContentView(R.layout.upload_done_layout);
-        TextView textView1, textView2, textView3;
-        Button noButton, yesButton;
-        ImageView word_icon;
-        textView1 = successDialog.findViewById(R.id.successText);
-        textView2 = successDialog.findViewById(R.id.pathText);
-        textView3 = successDialog.findViewById(R.id.question_text);
-        noButton = successDialog.findViewById(R.id.no_btn);
-        yesButton = successDialog.findViewById(R.id.yes_btn);
-        word_icon = successDialog.findViewById(R.id.done_icon);
+        SuccessDialogUtil.showSuccessDialog(v, String.valueOf(destiny), title, "File Encrypted Successfully",
+                "Do you want to set file password ?", R.drawable.ic_outline_lock_24);
 
-        textView1.setText(R.string.locked_successfully_display);
-        textView2.setText(destiny+title);
-        word_icon.setImageDrawable(context.getDrawable(R.drawable.lock_icon));
-        textView3.setText(R.string.locked_question);
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                Intent intent = new Intent(context, ToolsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-        });
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-            }
-        });
-        successDialog.show();
-        successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        successDialog.getWindow().setGravity(Gravity.TOP);
     }
 
 

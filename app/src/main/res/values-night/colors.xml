@@ -8,21 +8,25 @@
     <color name="white">#ffff</color>
 
     <color name="accent">#71A8F2</color>
-    <color name="primaryDark">#080B0D</color>
-    <color name="primary">#0D1216</color>
-    <color name="logo_background">#080B0D</color>
+    <color name="primaryDark">#1b1a1f</color>
+    <color name="primary">#262930</color>
+    <color name="logo_background">#8DB6ED</color>
     <color name="light_orange">#F4BD6B</color>
+    <color name="choose_image">#080C10</color>
+    <color name="choose_folder">#2291ECF8</color>
 
 
     <color name="background_color">#0D1216</color>
-    <color name="text_color">#F1EEEE</color>
-    <color name="text_color2">#A6A5A5</color>
+    <color name="text_color">#C9C6C6</color>
+    <color name="text_color2">#F8F5F5</color>
     <color name="text_color3">#81C9E1</color>
     <color name="view_color">#1E1E1E</color>
     <color name="image_color">#F1EFEF</color>
+    <color name="folder_color">#1b1a1f</color>
     <color name="purple_700">#B834CF</color>
     <color name="blue">#2196F3</color>
-    <color name="dark_blue">#1C1E20</color>
-    <color name="line_color">#395654</color>
+    <color name="line_color">#273741</color>
     <color name="text_color4">#414040</color>
+    <color name="folder_background">#22252B</color>
+    <color name="crop_background">#8793A3</color>
 </resources>

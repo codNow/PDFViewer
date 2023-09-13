@@ -2,7 +2,7 @@ package com.sasha.pdfviewer.tools;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,37 +20,31 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.sasha.pdfviewer.R;
-import com.sasha.pdfviewer.utils.NewPdfUtil;
-import com.sasha.pdfviewer.utils.SplitUtil;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class NewPdfFileActivity extends AppCompatActivity {
 
     private EditText newText, textTitle;
-    private Button createBtn;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_pdf_file);
 
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,7 +53,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
         });
 
         newText = findViewById(R.id.editText);
-        createBtn = findViewById(R.id.createButton);
+        Button createBtn = findViewById(R.id.createButton);
         textTitle = findViewById(R.id.titleText);
 
         createBtn.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +69,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
                 textView.setText(R.string.new_file_progress);
                 dialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
                 String destiny = Environment.getExternalStorageDirectory() +
-                        "/NewFile Folder/"+title+".pdf";
+                        "/New PDF/"+title+".pdf";
                 File dest = new File(destiny);
 
                 if (!dest.getParentFile().exists()){
@@ -95,10 +89,16 @@ public class NewPdfFileActivity extends AppCompatActivity {
                                 if (!TextUtils.isEmpty(inputText) && !TextUtils.isEmpty(title)){
                                     File outputFile = new File(destiny);
                                     PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputFile));
-                                    PdfCanvas canvas = new PdfCanvas(pdfDoc.addNewPage());
+                                    //PdfCanvas canvas = new PdfCanvas(pdfDoc.addNewPage());
                                     PdfFont font = PdfFontFactory.createFont();
-                                    canvas.beginText().setFontAndSize(font, 12).moveText(36, 750).showText(inputText).endText();
+
+                                    Document document = new Document(pdfDoc);
+                                    document.add(new Paragraph(inputText));
+                                    /*canvas.beginText().setFontAndSize(font, 12).moveText(36, 750)
+                                            .showText(inputText).endText();
+                                    canvas.beginText().setLineCapStyle(14);*/
                                     pdfDoc.close();
+                                    document.close();
                                     Toast.makeText(getApplicationContext(), R.string.new_file_success, Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                     newText.setText("");
@@ -125,6 +125,7 @@ public class NewPdfFileActivity extends AppCompatActivity {
             }
         });
     }
+    @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     private void popupSuccessDialog(String dest, String title){
         Dialog successDialog = new Dialog(NewPdfFileActivity.this);
         successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -142,7 +143,8 @@ public class NewPdfFileActivity extends AppCompatActivity {
 
         textView1.setText(R.string.new_file_success);
         textView2.setText(dest+title);
-        word_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.na_na));
+        word_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.ic_outline_insert_drive_file_24));
+        word_icon.setColorFilter(getColor(R.color.blue));
         textView3.setText(R.string.new_file_question);
 
         noButton.setOnClickListener(new View.OnClickListener() {
@@ -167,5 +169,11 @@ public class NewPdfFileActivity extends AppCompatActivity {
         successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         successDialog.getWindow().setGravity(Gravity.TOP);
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(NewPdfFileActivity.this, ToolsActivity.class));
+        overridePendingTransition(0,0);
     }
 }

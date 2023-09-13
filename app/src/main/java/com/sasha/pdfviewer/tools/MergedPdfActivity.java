@@ -3,6 +3,7 @@ package com.sasha.pdfviewer.tools;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -44,36 +45,27 @@ import com.sasha.pdfviewer.adapter.MergedAdapter;
 import com.sasha.pdfviewer.adapter.PdfAdapter;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.utils.FileUtils;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
+import com.sasha.pdfviewer.view.AllImageActivity;
 import com.sasha.pdfviewer.view.SearchActivity;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MergedPdfActivity extends AppCompatActivity implements MergedAdapter.OnFileLongClick, MergedAdapter.OnItemClicks {
+public class MergedPdfActivity extends AppCompatActivity
+        implements MergedAdapter.OnFileLongClick, MergedAdapter.OnItemClicks {
 
-    private RecyclerView recyclerView, wordRecyclerView;
+    private RecyclerView recyclerView;
     private ArrayList<PdfModel> mediaList = new ArrayList<>();
-    private ArrayList<String> folderList =new ArrayList<>();
-    private ArrayList<File> fileList =new ArrayList<>();
     private MergedAdapter pdfAdapter;
-    private Toolbar toolbar;
-    private EditText search_text;
-    private ArrayList<PdfModel> selectList = new ArrayList<>();
-    private ArrayList<Uri> uriList = new ArrayList<>();
     private int count = 0;
     private TextView selectedText;
-    public static boolean isContextTualModeEnabled = false;
-    private ImageView voice_icon, back_button, clear_button, search_logo;
-    private ArrayList<String> lockList = new ArrayList<>();
     private ProgressBar progressBar;
-    private LinearLayout search_layout, choose_layout, search_linear;
+    private LinearLayout choose_layout;
     private ArrayList<Uri> uris = new ArrayList<>();
-    private NestedScrollView nestedScrollView;
-    private ProgressBar loadingBar;
-    private ImageView delete_items, share_items, choose_backBtn, selectButton;
+    private ImageView  share_items, choose_backBtn, selectButton;
     private boolean isSelectAll = false;
-    private String defaultText = "Select File";
     boolean isSelectMode;
     ArrayList<String> strings = new ArrayList<>();
     private Button mergedButton;
@@ -85,8 +77,6 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
         setContentView(R.layout.activity_merged_pdf_activity);
 
         selectedText = findViewById(R.id.selectedText);
-
-
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressbar);
         choose_layout = findViewById(R.id.chose_linear);
@@ -192,7 +182,7 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
 
     private void loadAllPdf() {
 
-        mediaList = FileUtils.allPdfFile(this);
+        mediaList = FileUtils.allFileForCombine(this);
         recyclerView.setHasFixedSize(true);
         pdfAdapter = new MergedAdapter(getApplicationContext(), mediaList, strings,  this, this);
         recyclerView.setAdapter(pdfAdapter);
@@ -253,7 +243,7 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
         TextView textView = mdialog.findViewById(R.id.loading_text);
         textView.setText(R.string.merge_dialog);
         mdialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
-        String dest = Environment.getExternalStorageDirectory()+"/Combine Folder/"+fileName;
+        String dest = Environment.getExternalStorageDirectory()+"/Combined PDF/"+fileName;
         File file = new File(dest);
         mdialog.show();
         if (!file.getParentFile().exists()){
@@ -322,71 +312,80 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
                     // Close the output PDF
                     outputPdf.close();
                     observers.add(observer);
-                    Toast.makeText(getApplicationContext(), R.string.combine_success, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), R.string.combine_success, Toast.LENGTH_SHORT).show();
                     popupDoneDialog(dest, fileName);
                     mdialog.dismiss();
                 }
                 catch (IOException e){
                     e.printStackTrace();
                     mdialog.dismiss();
-                    Toast.makeText(MergedPdfActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MergedPdfActivity.this, "Please deselect password protected PDF", Toast.LENGTH_LONG).show();
                 }
 
             }
         }.start();
     }
 
-    private void popupDoneDialog(String destiny, String title) {
-        Dialog successDialog = new Dialog(this);
-        successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        successDialog.setContentView(R.layout.upload_done_layout);
-        TextView textView1, textView2, textView3;
-        Button noButton, yesButton;
-        ImageView word_icon;
-        textView1 = successDialog.findViewById(R.id.successText);
-        textView2 = successDialog.findViewById(R.id.pathText);
-        textView3 = successDialog.findViewById(R.id.question_text);
-        noButton = successDialog.findViewById(R.id.no_btn);
-        yesButton = successDialog.findViewById(R.id.yes_btn);
-        word_icon = successDialog.findViewById(R.id.done_icon);
 
-        textView1.setText(R.string.combine_success);
-        textView2.setText(destiny+title);
-        word_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.c_c));
-        textView3.setText(R.string.combine_question);
 
-        noButton.setOnClickListener(new View.OnClickListener() {
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void popupDoneDialog(String fileName, String dir) {
+        Context context = MergedPdfActivity.this;
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.upload_done_layout);
+        TextView title, messageText, questionText;
+        ImageView titleIcon;
+        Button positiveBtn, negativeBtn;
+
+        title = dialog.findViewById(R.id.successText);
+        messageText = dialog.findViewById(R.id.pathText);
+        questionText = dialog.findViewById(R.id.question_text);
+        titleIcon = dialog.findViewById(R.id.done_icon);
+        positiveBtn = dialog.findViewById(R.id.yes_btn);
+        negativeBtn = dialog.findViewById(R.id.no_btn);
+
+        title.setText(R.string.combine_success);
+        messageText.setText(dir + fileName);
+        questionText.setText(R.string.combine_question);
+        titleIcon.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_merge_24));
+        titleIcon.setColorFilter(getColor(R.color.blue));
+
+        negativeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                successDialog.dismiss();
+                dialog.dismiss();
                 startActivity(new Intent(MergedPdfActivity.this, ToolsActivity.class));
+            }
+        });
+        positiveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                deselectAll();
+
 
             }
         });
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                startActivity(getIntent());
-            }
-        });
-        successDialog.show();
-        successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        successDialog.getWindow().setGravity(Gravity.TOP);
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setGravity(Gravity.TOP);
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private void selectAll() {
         for (PdfModel item : mediaList) {
             item.setSelected(true);
             if (item.isSelected()){
-                count = count + 1;
+                count = mediaList.size();
                 updateCount(count);
             }
         }
         pdfAdapter.notifyDataSetChanged();
     }
+    @SuppressLint("NotifyDataSetChanged")
     private void deselectAll() {
         for (PdfModel item : mediaList) {
             item.setSelected(false);
@@ -398,8 +397,6 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
         pdfAdapter.notifyDataSetChanged();
     }
 
-
-
     @Override
     public void onItemClick(PdfModel pdfModel, int position) {
 
@@ -407,6 +404,12 @@ public class MergedPdfActivity extends AppCompatActivity implements MergedAdapte
             count = count + 1;
             updateCount(count);
             mergedButton.setVisibility(View.VISIBLE);
+            if (count < 2){
+                mergedButton.setText("Next");
+            }
+            else{
+                mergedButton.setText("Combine");
+            }
         }
         else if (!pdfModel.isSelected()){
             count = count - 1;

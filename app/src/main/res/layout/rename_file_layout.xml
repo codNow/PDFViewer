@@ -15,26 +15,25 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/textTitle"
-            android:text="Rename File"
+            android:text="@string/rename_file"
             android:layout_marginStart="10dp"
             android:fontFamily="@font/montserrat"
             android:padding="10dp"
             android:textColor="@color/white"
-            android:textSize="17sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Type your filename"
+        android:text="@string/type_your_filename"
         android:textColor="@color/text_color"
         android:layout_below="@id/first_linear"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:textSize="16sp"
         android:fontFamily="@font/josefont"
-        android:textStyle="bold"
         android:id="@+id/text1" />
 
     <EditText
@@ -53,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@id/rename_text"
         android:weightSum="2"
@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textAllCaps="false"
             android:textColor="@color/Red_color"
             android:layout_marginBottom="10dp"

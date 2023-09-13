@@ -22,6 +22,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,11 +56,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.adapter.RecentAdapter;
+
 import com.sasha.pdfviewer.tools.CameraActivity;
 import com.sasha.pdfviewer.tools.CameraFolderActivity;
 import com.sasha.pdfviewer.model.RecentModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
+import com.sasha.pdfviewer.utils.FileUtils;
 import com.sasha.pdfviewer.utils.RealPathUtil;
+
+
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +72,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MainActivity extends AppCompatActivity implements RecentAdapter.OnItemClicks, RecentAdapter.OnFileLongClick {
+
+public class MainActivity extends AppCompatActivity implements RecentAdapter.OnItemClicks, RecentAdapter.OnFileLongClick{
 
     private BottomNavigationView bottomNavigationView;
     private ImageView new_file, close_btn;
@@ -84,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
     private ImageView notification, app_logo, delete_items, shareItems;
     private ArrayList<RecentModel> selectList = new ArrayList<>();
     private LinearLayout recent_linear, chose_linear;
-    private TextView selectTextView;
+    private TextView selectTextView, appName;
     private ArrayList<Uri> uris = new ArrayList<>();
     private boolean doubleBackPressed = false;
     private final static String READ_EXTERNAL_STORAGE =
@@ -110,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
     private Switch theme_switch;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         no_recent = findViewById(R.id.no_recent_file);
         progressBar = findViewById(R.id.progressbar);
         clear_button = findViewById(R.id.clear_button);
-        coordinatorLayout = findViewById(R.id.ordinate_display);
         recent_linear = findViewById(R.id.recent_linear);
         chose_linear = findViewById(R.id.chose_linear);
         delete_items = findViewById(R.id.delete_items);
@@ -137,13 +141,13 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         app_logo = findViewById(R.id.app_logo);
         app_name = findViewById(R.id.app_name);
         toolbar = findViewById(R.id.toolbar);
-        main_page = findViewById(R.id.home_page);
         chose_backBtn = findViewById(R.id.chose_backBtn);
         selectBtn = findViewById(R.id.select_items);
         permission_button = findViewById(R.id.permission_button);
         permission_layout = findViewById(R.id.permission_layout);
         theme_switch = findViewById(R.id.theme_switch);
         camera_button = findViewById(R.id.camera_button);
+        app_name = findViewById(R.id.app_name);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             }
         });
 
-       /* theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (isDarkMode){
@@ -193,19 +197,19 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
             }
-        });*/
-
-
+        });
 
         new_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getPdfFile();
-                startActivity(new Intent(MainActivity.this, CameraFolderActivity.class));
+                getPdfFile();
+
+                //startActivity(new Intent(MainActivity.this, TestActivity.class));
             }
         });
         showBottom();
         recentNote();
+        //getRecentList();
         chose_backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -264,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
 
     private void buttonListener() {
         selectBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint({"NotifyDataSetChanged", "UseCompatLoadingForDrawables", "SetTextI18n"})
             @Override
             public void onClick(View view) {
                 if (!isSelectAll) {
@@ -340,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                         public void onClick(View v) {
                             int position = pdfAdapter.getSelectedPosition();
                             ArrayList<RecentModel> selectedFilePaths = pdfAdapter.getSelectedItems();
+
                             for (RecentModel pdfModel : selectedFilePaths) {
                                 String filePath = pdfModel.getPdfPath();
                                 String id = pdfModel.getPdfId();
@@ -348,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                                     file.delete();
                                     selectedFilePaths.remove(file);
                        /* Uri contentUris = ContentUris.withAppendedId(
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                                MediaStore.Files.getContentUri("external"),
                                 Long.parseLong(id));
                         getApplicationContext().getContentResolver().delete(
                                 contentUris, null, null
@@ -357,6 +363,9 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                                     recyclerView.getAdapter().notifyItemRemoved(position);
                                     count = 0;
                                     updateCount(count);
+                                    RemoveContextualActionMode();
+                                    isSelectMode = false;
+                                    pdfAdapter.setSelectMode(false);
 
                                 }
 
@@ -412,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                         this,
                         PERMISSION_STORAGE,
                         REQUEST_EXTERNAL_STORAGE);*/
+
                 permission_layout.setVisibility(View.VISIBLE);
                 permission_button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -471,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
     public void verifyStoragePermission(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity, WRITE_EXTERNAL_STORAGE);
 
-        if (SDK_INT == Build.VERSION_CODES.P){
+        if (SDK_INT <= Build.VERSION_CODES.P){
             if (ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     + ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -506,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
     }
 
 
+    @SuppressLint("SetTextI18n")
     public  void clearFile(View view) {
 
         final TextView textTile, textMessage;
@@ -527,6 +538,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         yesButton.setText("Yes");
         noButton.setText("No");
         yesButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View v) {
                 String path = Environment.getExternalStorageDirectory()+"/RecentFile/";
@@ -544,6 +556,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                     pdfAdapter.notifyDataSetChanged();
                     modelPdfs.clear();
                     alertDialog.dismiss();
+                    startActivity(getIntent());
 
                 }
             }
@@ -603,6 +616,84 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         resultLauncher.launch(intent);
     }
 
+    private void getRecentList(){
+
+        if (SDK_INT > Build.VERSION_CODES.Q){
+
+            String name = "RecentFile";
+
+            modelPdfs = FileUtils.recentFolder(this);
+            pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, this, this);
+            recyclerView.setAdapter(pdfAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this,
+                    RecyclerView.VERTICAL, false));
+            pdfAdapter.notifyDataSetChanged();
+            isSelectMode = pdfAdapter.isSelectMode();
+        }
+        if (SDK_INT <= Build.VERSION_CODES.Q){
+            ArrayList<String> pdfPathList = new ArrayList<>();
+            modelPdfs.clear();
+
+            pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, this, this);
+            recyclerView.setAdapter(pdfAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this,
+                    RecyclerView.VERTICAL, false));
+            pdfAdapter.notifyDataSetChanged();
+            isSelectMode = pdfAdapter.isSelectMode();
+
+            RecentModel item ;
+            String file_ext = ".pdf";
+            String name = "RecentFile";
+
+            try{
+                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+name;
+                File dir = new File(folderPath);
+
+                File listPdf[] = dir.listFiles();
+
+                if (listPdf != null){
+                    for (int i = 0; i < listPdf.length; i++){
+                        File pdf_file = listPdf[i];
+
+                        if (pdf_file.getName().endsWith(file_ext)){
+                            item = new RecentModel();
+                            item.setPdfTitle(pdf_file.getName());
+                            item.setPdfPath(pdf_file.getAbsolutePath());
+                            item.setPdfDate(String.valueOf(pdf_file.lastModified()));
+                            item.setPdfSize(convertSize(pdf_file.length()));
+
+
+                            modelPdfs.add(item);
+                            pdfAdapter.notifyDataSetChanged();
+
+                        }
+                    }
+                }
+                modelPdfs.sort(new Comparator<RecentModel>() {
+                    @Override
+                    public int compare(RecentModel recentModel, RecentModel t1) {
+                        if (modelPdfs != null) {
+                            return recentModel.getPdfDate().compareTo(t1.getPdfDate());
+                        }
+                        else{
+                            return 0;
+                        }
+                    }
+                });
+                Collections.reverse(modelPdfs);
+
+                if (modelPdfs.isEmpty()){
+                    no_recent.setVisibility(View.VISIBLE);
+                    clear_button.setVisibility(View.GONE);
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 
 
     private void showBottom() {
@@ -610,6 +701,7 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         bottomNavigationView.setSelectedItemId(R.id.home_menu);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
@@ -640,25 +732,9 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         });
     }
 
-/*    @SuppressLint("UseCompatLoadingForDrawables")
-    @Override
-    public boolean onLongClick(View v) {
-        isContextTualModeEnabled = true;
-        pdfAdapter.notifyDataSetChanged();
-        new_file.setVisibility(View.GONE);
-        if (isContextTualModeEnabled){
-            recent_linear.setVisibility(View.GONE);
-            chose_linear.setVisibility(View.VISIBLE);
-            bottomNavigationView.setVisibility(View.GONE);
-        }
-        else{
-            recent_linear.setVisibility(View.VISIBLE);
-            chose_linear.setVisibility(View.GONE);
-            bottomNavigationView.setVisibility(View.VISIBLE);
-        }
-        return true;
-    }*/
 
+
+    @SuppressLint("SetTextI18n")
     private void updateCount(int counts) {
         if (counts == 0){
             selectTextView.setText("Select File");
@@ -668,23 +744,17 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
         }
     }
 
-  /*  @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.profile_menu:
-                startActivity(new Intent(this, ProfileActivity.class));
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
 
+
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onResume() {
         super.onResume();
+
         ArrayList<String> pdfPathList = new ArrayList<>();
         modelPdfs.clear();
 
-        pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, MainActivity.this, this);
+        pdfAdapter = new RecentAdapter(getApplicationContext(), modelPdfs, this, this);
         recyclerView.setAdapter(pdfAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this,
                 RecyclerView.VERTICAL, false));
@@ -719,17 +789,17 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
                     }
                 }
             }
-           modelPdfs.sort(new Comparator<RecentModel>() {
-               @Override
-               public int compare(RecentModel recentModel, RecentModel t1) {
-                   if (modelPdfs != null) {
-                       return recentModel.getPdfDate().compareTo(t1.getPdfDate());
-                   }
-                   else{
-                       return 0;
-                   }
-               }
-           });
+            modelPdfs.sort(new Comparator<RecentModel>() {
+                @Override
+                public int compare(RecentModel recentModel, RecentModel t1) {
+                    if (modelPdfs != null) {
+                        return recentModel.getPdfDate().compareTo(t1.getPdfDate());
+                    }
+                    else{
+                        return 0;
+                    }
+                }
+            });
             Collections.reverse(modelPdfs);
 
             if (modelPdfs.isEmpty()){
@@ -741,17 +811,20 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             e.printStackTrace();
         }
 
+
     }
+    @SuppressLint("NotifyDataSetChanged")
     private void selectAll() {
         for (RecentModel item : modelPdfs) {
             item.setSelected(true);
             if (item.isSelected()){
-                count = count + 1;
+                count = modelPdfs.size();
                 updateCount(count);
             }
         }
         pdfAdapter.notifyDataSetChanged();
     }
+    @SuppressLint("NotifyDataSetChanged")
     private void deselectAll() {
         for (RecentModel item : modelPdfs) {
             item.setSelected(false);
@@ -761,35 +834,6 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             }
         }
         pdfAdapter.notifyDataSetChanged();
-    }
-    private void refresh(){
-        isSelectMode = false;
-        startActivity(getIntent());
-    }
-
-    private void RemoveContextualActionMode() {
-        isSelectMode = false;
-        count = 0;
-        updateCount(count);
-        selectList.clear();
-        pdfAdapter.notifyDataSetChanged();
-        new_file.setVisibility(View.VISIBLE);
-        chose_linear.setVisibility(View.GONE);
-        recent_linear.setVisibility(View.VISIBLE);
-        bottomNavigationView.setVisibility(View.VISIBLE);
-        deselectAll();
-
-    }
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }*/
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
 
@@ -834,17 +878,49 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
             bottomNavigationView.setVisibility(View.VISIBLE);
         }
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void RemoveContextualActionMode() {
+        isSelectMode = false;
+        count = 0;
+        selectList.clear();
+
+        recent_linear.setVisibility(View.VISIBLE);
+
+        chose_linear.setVisibility(View.GONE);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        new_file.setVisibility(View.VISIBLE);
+        deselectAll();
+        pdfAdapter.notifyDataSetChanged();
+
+
+    }
+
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
 
-        if (doubleBackPressed){
-            //super.onBackPressed();
-          /*  Intent intent = new Intent(Intent.ACTION_MAIN);
+
+        if (pdfAdapter.selectMode){
+            pdfAdapter.setSelectMode(false);
+            RemoveContextualActionMode();
+
+            count = 0;
+            isSelectMode = false;
+        }
+        else if (!isSelectMode){
+            Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish();*/
+        }
+        /*if (doubleBackPressed){
+            //super.onBackPressed();
+          *//*  Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();*//*
             finishAffinity();
 
         }
@@ -869,6 +945,9 @@ public class MainActivity extends AppCompatActivity implements RecentAdapter.OnI
 
                     }
                 }, 2000);
+*/
+
 
     }
+
 }

@@ -1,6 +1,9 @@
 package com.sasha.pdfviewer.view;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,6 +14,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -29,9 +33,12 @@ import androidx.core.content.ContextCompat;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.github.barteksc.pdfviewer.listener.OnLongPressListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.sasha.pdfviewer.R;
 import com.shockwave.pdfium.PdfDocument;
 
@@ -43,9 +50,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-public class PdfViewActivity extends AppCompatActivity implements OnLoadCompleteListener, OnPageChangeListener, OnPageErrorListener {
+public class PdfViewActivity extends AppCompatActivity implements
+        OnLoadCompleteListener, OnPageChangeListener, OnPageErrorListener {
 
-    private String title, pdfPath, uriPath, uriTitle, listTitle, listPath;
+    private String title, pdfPath, uriPath, uriTitle;
     private TextView pdfName, pdf_path;
     private PDFView pdfView;
     private ProgressBar progressBar;
@@ -84,9 +92,6 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
             }
         });
 
-
-
-
         if (getIntent().hasExtra("file")){
             pdfUri = getIntent().getParcelableExtra("file");
             uriPath = getIntent().getStringExtra("uriPath");
@@ -100,7 +105,9 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
                 pdf_path.setText(uriPath);
             }
             pdfName.setText(uriTitle);
-            pdf_path.setText(String.valueOf(realPath));
+            File parentFile = uriFile.getParentFile();
+            String filePath = parentFile.getAbsolutePath();
+            pdf_path.setText(filePath);
 
             try {
                 loadUriFile(pdfUri);
@@ -108,15 +115,15 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
                 e.printStackTrace();
             }
 
-
         }
         else if (getIntent().hasExtra("title")){
-            file_path = new File(getIntent().getStringExtra("title"));
+            file_path = new File(getIntent().getStringExtra("path"));
             title = getIntent().getStringExtra("title");
             pdfPath = getIntent().getStringExtra("path");
-            pdfName.setText(pdfPath);
-            pdf_path.setText(title);
+            String parentFile = file_path.getParentFile().getName();
 
+            pdfName.setText(title);
+            pdf_path.setText(parentFile);
             try {
                 loadFile(file_path);
             } catch (IOException e) {
@@ -165,9 +172,41 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
                         .onPageError(PdfViewActivity.this)
                         .swipeHorizontal(false)
                         .spacing(0)
+                        .onLongPress(new OnLongPressListener() {
+                            @Override
+                            public void onLongPress(MotionEvent e) {
+
+                            }
+                        })
                         .defaultPage(0)
                         .load();
+
+                pdfView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+
+                        float startX = pdfView.getCurrentXOffset();
+                        float startY = pdfView.getCurrentYOffset();
+                        float endX = startX + pdfView.getWidth();
+                        float endY = startY + pdfView.getHeight();
+
+
+
+
+                        String selectedText = "";
+
+                        if (selectedText != null && !selectedText.isEmpty()) {
+                            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("Copied Text", selectedText);
+                            clipboard.setPrimaryClip(clip);
+
+                        }
+                        return false;
+                    }
+                });
                 progressBar.setVisibility(View.GONE);
+
+
                 try {
                     copyUri(uriPath);
                 } catch (IOException e) {
@@ -177,6 +216,8 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
         }.start();
 
     }
+
+
 
     private void loadFile(File file_path) throws IOException {
         progressBar.setVisibility(View.VISIBLE);
@@ -420,6 +461,7 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
             }
         }
     }
+
     private void copyListFile(File listFile) throws IOException {
 
         File sourceFile = new File(String.valueOf(listFile));
@@ -462,9 +504,9 @@ public class PdfViewActivity extends AppCompatActivity implements OnLoadComplete
 
     @Override
     public void onBackPressed() {
-        /*super.onBackPressed();
-        */
+
         startActivity(new Intent(PdfViewActivity.this, SearchActivity.class));
+        overridePendingTransition(0, 0);
     }
 
     @Override

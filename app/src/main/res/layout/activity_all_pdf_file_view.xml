@@ -10,12 +10,13 @@
     <RelativeLayout
         android:id="@+id/upper_layout"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp"
+        android:background="@color/transparent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:id="@+id/search_layout"
             android:orientation="horizontal">
             <ImageView
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="@drawable/search_background"
+                android:background="@drawable/all_search_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -57,19 +58,20 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
+                    android:cursorVisible="true"
                     android:hint="@string/search_files"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:lines="1"
                     android:paddingStart="5dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
                     android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
                     android:textColor="@color/text_color"
                     android:textColorHint="@color/text_color"
                     android:textCursorDrawable="@drawable/cursor_colour"
-                    android:cursorVisible="true"
-                    android:textSize="18sp" />
+                    android:textSize="13sp"
+                    tools:ignore="TouchTargetSizeCheck" />
 
 
                 <RelativeLayout
@@ -83,7 +85,7 @@
                         android:layout_height="25dp"
                         android:adjustViewBounds="true"
                         android:visibility="gone"
-                        android:src="@drawable/ic_outline_cancel_24"
+                        android:src="@drawable/ic_baseline_close_24"
                         android:padding="2dp"
                         app:tint="@color/image_color" />
 
@@ -100,8 +102,6 @@
             android:padding="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:elevation="5dp"
             android:weightSum="10"
             android:background="@drawable/small_background2"
@@ -125,8 +125,8 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textAlignment="center"
-                android:fontFamily="@font/josefont"
-                android:textColor="@color/purple_700"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/text_color"
                 android:id="@+id/selectedText"/>
 
             <LinearLayout
@@ -136,24 +136,24 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
-                    android:layout_width="27dp"
-                    android:layout_height="27dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_marginEnd="15dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_baseline_delete_24"
+                    android:src="@drawable/ic_outline_delete_24"
                     android:id="@+id/delete_items"
-                    app:tint="@color/Red_color" />
+                    app:tint="@color/image_color" />
                 <ImageView
-                    android:layout_width="27dp"
-                    android:layout_height="27dp"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
                     android:layout_marginEnd="15dp"
                     android:src="@drawable/share_icon"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/share_items"
-                    app:tint="@color/blue" />
+                    app:tint="@color/image_color" />
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginEnd="5dp"
                     android:src="@drawable/select_all_icon"
                     android:layout_gravity="center_vertical"
@@ -191,8 +191,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/recyclerView"
-            android:layout_marginEnd="5dp"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginBottom="50dp"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

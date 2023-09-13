@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sasha.pdfviewer.R;
-import com.sasha.pdfviewer.adapter.AllPdfAdapter;
+import com.sasha.pdfviewer.adapter.WaterMarkFolderAdapter;
 import com.sasha.pdfviewer.model.PdfModel;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class WatermarkFolderActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView, wordRecyclerView;
     private ArrayList<PdfModel> mediaList = new ArrayList<>();
-    private AllPdfAdapter pdfAdapter;
+    private WaterMarkFolderAdapter pdfAdapter;
     private Toolbar toolbar;
     private EditText search_text;
     private ArrayList<PdfModel> selectList = new ArrayList<>();
@@ -57,25 +57,60 @@ public class WatermarkFolderActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        progressBar.setVisibility(View.VISIBLE);
-        new CountDownTimer(1500, 1500){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            loadAllPdf();
 
-            @Override
-            public void onTick(long l) {
-            }
-            @Override
-            public void onFinish() {
-                loadAllPdf();
-                progressBar.setVisibility(View.GONE);
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q){
+            getPdfFileForBelowB();
 
+        }
+    }
+    private void getPdfFileForBelowB(){
+        recyclerView.setHasFixedSize(true);
+        pdfAdapter = new WaterMarkFolderAdapter(getApplicationContext(), mediaList);
+        recyclerView.setAdapter(pdfAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false));
+        PdfModel item ;
+        String file_ext = ".pdf";
+        String folderName = "Marked PDF";
+
+        try{
+            String folderPath =
+                    Environment.getExternalStorageDirectory()
+                            .getAbsolutePath() +"/"+ folderName;
+
+            File dir = new File(folderPath);
+
+            File listPdf[] = dir.listFiles();
+
+            if (listPdf != null){
+                for (int i = 0; i < listPdf.length; i++){
+                    File pdf_file = listPdf[i];
+
+                    if (pdf_file.getName().endsWith(file_ext)){
+                        item = new PdfModel();
+                        item.setTitle(pdf_file.getName());
+                        item.setPath(pdf_file.getPath());
+
+                        mediaList.add(item);
+                    }
+                }
             }
-        }.start();
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
     private void loadAllPdf() {
         ArrayList<String> strings = new ArrayList<>();
         mediaList = loadFiles(this);
         recyclerView.setHasFixedSize(true);
-        pdfAdapter = new AllPdfAdapter(getApplicationContext(), mediaList);
+        pdfAdapter = new WaterMarkFolderAdapter(getApplicationContext(), mediaList);
         recyclerView.setAdapter(pdfAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
@@ -123,7 +158,7 @@ public class WatermarkFolderActivity extends AppCompatActivity {
 
                 boolean isSelected = false;
                 PdfModel modelPdf = new PdfModel(pdfId, title, path, convertSize(size), date, isSelected);
-                if (subString.contains("WaterMarkPdfs")) {
+                if (subString.contains("Marked PDF")) {
                     arrayList.add(modelPdf);
                     progressBar.setVisibility(View.GONE);
                 }

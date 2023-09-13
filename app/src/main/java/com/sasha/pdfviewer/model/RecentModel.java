@@ -2,6 +2,9 @@ package com.sasha.pdfviewer.model;
 
 import java.util.Date;
 
+import kotlin.jvm.internal.SerializedIr;
+
+
 public class RecentModel {
 
     private String pdfId;

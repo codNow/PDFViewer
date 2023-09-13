@@ -30,7 +30,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.sasha.pdfviewer.model.ImageModel;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.view.MainActivity;
 import com.sasha.pdfviewer.R;
@@ -56,11 +58,13 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     public  boolean selectMode = false;
 
     public  RecentAdapter(Context context, ArrayList<RecentModel> recentModels,
-                          OnItemClicks onItemClicks, OnFileLongClick onFileLongClick) {
+                          OnItemClicks onItemClicks, OnFileLongClick onFileLongClick
+                        ) {
         this.context = context;
         this.recentModels = recentModels;
         this.onItemClicks = onItemClicks;
         this.onFileLongClick = onFileLongClick;
+
     }
     public void enterSelectMode(){
         selectMode = true;
@@ -108,12 +112,15 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             public boolean onLongClick(View view) {
                 recentModel.setSelected(!recentModel.isSelected());
                 holder.checkboxImage.setVisibility(View.VISIBLE);
+                holder.cardView.setVisibility(View.VISIBLE);
                // holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
                 holder.option_btn.setVisibility(View.GONE);
                 selectMode = true;
+                enterSelectMode();
                 if (selectMode){
                     recentModel.setSelected(!recentModel.isSelected());
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.cardView.setVisibility(View.VISIBLE);
                     holder.option_btn.setVisibility(View.GONE);
 
                 }
@@ -131,10 +138,13 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
                 if (selectMode){
                     recentModel.setSelected(!recentModel.isSelected());
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.cardView.setVisibility(View.VISIBLE);
+                    enterSelectMode();
                     //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
                     if (recentModel.isSelected()){
                         recentModel.setSelected(true);
                         holder.checkboxImage.setVisibility(View.VISIBLE);
+                        holder.cardView.setVisibility(View.VISIBLE);
                         holder.option_btn.setVisibility(View.GONE);
                         holder.checkBox.setChecked(true);
                         if (!recentModels.contains(recentModel)){
@@ -146,6 +156,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
                         holder.checkboxImage.setVisibility(View.GONE);
                         holder.checkBox.setChecked(false);
                         holder.option_btn.setVisibility(View.VISIBLE);
+                        holder.cardView.setVisibility(View.GONE);
                         //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
                     }
                     if (onItemClicks != null){
@@ -153,6 +164,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
                     }
                 }
                 else if (!selectMode){
+                    exitSelectMode();
                     Intent intent = new Intent(context, RecentViewActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("fileName", recentModel.getPdfTitle());
@@ -161,80 +173,60 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
                     intent.putExtra("fileId", recentModel.getPdfId());
                     intent.putExtra("date", recentModel.getPdfDate());
                     context.startActivity(intent);
+
+
                 }
             }
         });
         if (recentModel.isSelected()){
             holder.checkboxImage.setVisibility(View.VISIBLE);
             holder.option_btn.setVisibility(View.GONE);
+            holder.cardView.setVisibility(View.VISIBLE);
            // holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.logo_background));
         }
         else{
             holder.checkboxImage.setVisibility(View.GONE);
             holder.option_btn.setVisibility(View.VISIBLE);
+            holder.cardView.setVisibility(View.GONE);
             //holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary));
         }
 
+        if (selectMode){
+            holder.image_icon.setVisibility(View.VISIBLE);
 
-        /*if (MainActivity.isContextTualModeEnabled){
-            if (onItemClicks != null){
-                onItemClicks.onItemLongClick(recentModel, position);
-            }
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    recentModel.setSelected(!recentModel.isSelected());
-                    holder.checkboxImage.setVisibility(View.VISIBLE);
-                    if (recentModel.isSelected()){
-                        holder.checkboxImage.setVisibility(View.VISIBLE);
-                        holder.option_btn.setVisibility(View.GONE);
-                        recentModel.setSelected(true);
-                        holder.checkBox.setChecked(true);
-                        if (!recentModels.contains(recentModel)){
-                            recentModels.add(recentModel);
+        }
+        else if (!selectMode){
+            holder.image_icon.setVisibility(View.GONE);
+            File file = new File(recentModel.getPdfPath());
 
-                        }
-                    }
-                    else{
-                        holder.checkboxImage.setVisibility(View.GONE);
-                        holder.checkBox.setChecked(false);
-                        recentModel.setSelected(false);
-                        holder.option_btn.setVisibility(View.VISIBLE);
-                    }
-                    if (onItemClicks != null){
-                        onItemClicks.onItemClick(recentModel, position);
-                    }
-
+            try{
+                if (file != null){
+                    //new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
+                    holder.pdfView.fromFile(new File(recentModel.getPdfPath()))
+                            .onError(new OnErrorListener() {
+                                @Override
+                                public void onError(Throwable t) {
+                                    holder.pdfView.setVisibility(View.GONE);
+                                    holder.image_icon.setVisibility(View.VISIBLE);
+                                    holder.image_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_lock2));
+                                }
+                            })
+                            .pages(0).load();
                 }
-            });
-            if (recentModel.isSelected()){
-                holder.checkboxImage.setVisibility(View.VISIBLE);
-                holder.option_btn.setVisibility(View.GONE);
+
             }
-            else{
-                holder.checkboxImage.setVisibility(View.GONE);
-                holder.option_btn.setVisibility(View.VISIBLE);
+            catch (Exception e){
+                e.printStackTrace();
+                holder.pdfView.setVisibility(View.GONE);
+                holder.image_icon.setVisibility(View.VISIBLE);
+                holder.image_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_lock2));
             }
         }
-        else{
-            holder.checkBox.setVisibility(View.GONE);
-            holder.option_btn.setVisibility(View.VISIBLE);
-            holder.checkboxImage.setVisibility(View.GONE);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, RecentViewActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("fileName", recentModel.getPdfTitle());
-                    intent.putExtra("filePath", recentModel.getPdfPath().toString());
-                    intent.putExtra("fileSize", recentModel.getPdfSize());
-                    intent.putExtra("fileId", recentModel.getPdfId());
-                    intent.putExtra("date", recentModel.getPdfDate());
-                    context.startActivity(intent);
 
-                }
-            });
-        }*/
+
+
+
+
         holder.option_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -275,20 +267,6 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         });
 
 
-        File file = new File(recentModel.getPdfPath());
-
-        try{
-            if (file != null){
-                new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
-                holder.pdfView.fromFile(new File(recentModel.getPdfPath())).defaultPage(0).load();
-            }
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            holder.pdfView.setVisibility(View.GONE);
-            holder.image_icon.setVisibility(View.VISIBLE);
-        }
 
 
     }
@@ -304,11 +282,25 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     public int getSelectedPosition() {
         for (int i = 0; i < recentModels.size(); i++) {
             RecentModel pdfModel = recentModels.get(i);
+            Uri uriArrayList = Uri.parse(recentModels.get(i).getPdfPath());
             if (pdfModel.isSelected()) {
                 return i;
             }
         }
         return -1;
+    }
+
+    public void removedSelectedImages(ArrayList<RecentModel> filesToDelete) {
+
+        for (RecentModel recentModel : filesToDelete) {
+            if (recentModel.isSelected()){
+                recentModels.remove(recentModel);
+
+                notifyDataSetChanged();
+            }
+
+        }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -388,6 +380,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         private CheckBox checkBox;
         private PDFView pdfView;
         private ProgressBar progressBar;
+        private View cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -401,6 +394,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             image_icon = itemView.findViewById(R.id.image_icon);
             progressBar = itemView.findViewById(R.id.progressbar);
             checkboxImage = itemView.findViewById(R.id.checking);
+            cardView = itemView.findViewById(R.id.choose_card);
         }
 
     }

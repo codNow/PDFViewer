@@ -4,9 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -20,10 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sasha.pdfviewer.R;
-import com.sasha.pdfviewer.adapter.AllPdfAdapter;
+import com.sasha.pdfviewer.adapter.WordDocAdapter;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.model.RecentModel;
-import com.sasha.pdfviewer.view.SearchActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,11 +28,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class WordFolderActivity extends AppCompatActivity {
-    private RecyclerView recyclerView, wordRecyclerView;
+    private RecyclerView recyclerView;
     private ArrayList<PdfModel> mediaList = new ArrayList<>();
     private ArrayList<String> folderList =new ArrayList<>();
     private ArrayList<File> fileList =new ArrayList<>();
-    private AllPdfAdapter pdfAdapter;
     private Toolbar toolbar;
     private EditText search_text;
     private ArrayList<RecentModel> selectList = new ArrayList<>();
@@ -49,20 +45,7 @@ public class WordFolderActivity extends AppCompatActivity {
     private LinearLayout linear_search;
     private ArrayList<File> pdfList;
     private ArrayList<PdfModel> modelPdfs = new ArrayList<>();
-    private String name, displayName;
-    private static final int PAGE_START = 1;
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-    private int pageSize = 5;
-    private int currentPage = PAGE_START;
-    int itemCount = 0;
-    int limit = 2;
-    SwipeRefreshLayout swipeRefresh;
-    String pdfId, path, title, date, subString;
-    int slashFirstIndex;
-    long size;
-    boolean isSelected = false;
-    ArrayList<PdfModel> arrayList;
+    private WordDocAdapter wordDocAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,15 +168,15 @@ public class WordFolderActivity extends AppCompatActivity {
         ArrayList<String> pdfPathList = new ArrayList<>();
         modelPdfs.clear();
 
-        pdfAdapter = new AllPdfAdapter(getApplicationContext(), modelPdfs);
-        recyclerView.setAdapter(pdfAdapter);
+        wordDocAdapter = new WordDocAdapter(getApplicationContext(), modelPdfs);
+        recyclerView.setAdapter(wordDocAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
-        pdfAdapter.notifyDataSetChanged();
+        wordDocAdapter.notifyDataSetChanged();
 
         PdfModel item ;
         String file_ext = ".doc";
-        String name = "ConvertWord";
+        String name = "Text Doc";
 
         try{
             String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+name;
@@ -213,7 +196,7 @@ public class WordFolderActivity extends AppCompatActivity {
                         item.setSize(convertSize(pdf_file.length()));
 
                         modelPdfs.add(item);
-                        pdfAdapter.notifyDataSetChanged();
+                        wordDocAdapter.notifyDataSetChanged();
 
                     }
                 }

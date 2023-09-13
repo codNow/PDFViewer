@@ -1,5 +1,6 @@
 package com.sasha.pdfviewer.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,12 +32,14 @@ import com.itextpdf.kernel.pdf.canvas.parser.data.IEventData;
 import com.itextpdf.kernel.pdf.canvas.parser.data.ImageRenderInfo;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.ITextExtractionStrategy;
 import com.sasha.pdfviewer.R;
+import com.sasha.pdfviewer.folderList.ExtractedImagesFolderActivity;
 import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ImageViewActivity;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
 import com.sasha.pdfviewer.utils.ImageExtractUtil;
 import com.sasha.pdfviewer.utils.PdfUtils;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,10 +82,10 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.checkboxImage.setVisibility(View.VISIBLE);
-                holder.option_btn.setVisibility(View.GONE);
+
                 if (PdfUtils.isFileNotLock(file)) {
                     holder.checkboxImage.setVisibility(View.VISIBLE);
+                    holder.option_btn.setVisibility(View.GONE);
                     final Dialog dialog = new Dialog(view.getRootView().getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setContentView(R.layout.question_dialog);
@@ -112,7 +115,7 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                                 startExtractImages(view,title, path, file, holder.checkboxImage);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                Toast.makeText(context, "This file does not contain image", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, R.string.file_without_image, Toast.LENGTH_SHORT).show();
                             }
                             dialog.dismiss();
 
@@ -159,9 +162,10 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                     try {
                         ImageExtractUtil.extractImages(String.valueOf(file), dest, context);
                         checkBox.setVisibility(View.GONE);
+                        popUpDialog(view, title, dest);
                         Toast.makeText(context, R.string.extract_success, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        popUpDialog(view, title, dest);
+
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -175,7 +179,10 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
 
 
     }
-    private void popUpDialog(View view,String fileName, String dir) {
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void popUpDialog(View view, String fileName, String dir) {
+       /* SuccessDialogUtil.showSuccessDialog(view, dir, fileName, " Image Extracted Successfully",
+                "Do you want to extract more ?", R.drawable.m_p);*/
         Dialog dialog = new Dialog(view.getRootView().getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.upload_done_layout);
@@ -193,7 +200,8 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
         title.setText(R.string.extract_success);
         messageText.setText(dir + fileName);
         questionText.setText(R.string.extract_question);
-        titleIcon.setImageDrawable(context.getDrawable(R.drawable.m_p));
+        titleIcon.setImageDrawable(context.getDrawable(R.drawable.ic_round_image_24));
+        titleIcon.setColorFilter(context.getColor(R.color.blue));
 
         negativeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,11 +212,19 @@ public class ExtractImagesAdapter extends RecyclerView.Adapter<ExtractImagesAdap
                 context.startActivity(intent);
             }
         });
+        messageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ExtractedImagesFolderActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
         positiveBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                pdfModelArrayList.clear();
             }
         });
         dialog.show();

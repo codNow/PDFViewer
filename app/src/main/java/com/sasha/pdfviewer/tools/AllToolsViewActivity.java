@@ -1,6 +1,7 @@
 package com.sasha.pdfviewer.tools;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -50,26 +53,19 @@ import java.util.Date;
 
 public class AllToolsViewActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView, wordView, compressView;
+    private RecyclerView recyclerView;
     private ArrayList<PdfModel> modelArrayList = new ArrayList<>();
     private LockAdapter lockAdapter;
     private WordAdapter wordAdapter;
     private WaterMarkAdapter waterMarkAdapter;
     private SplitAdapter splitAdapter;
-    private ImagePdfAdapter imagePdfAdapter;
     private ExtractImagesAdapter extractImagesAdapter;
     private DecryptAdapter decryptAdapter;
-    private ArrayList<PdfModel> pdfModelArrayList = new ArrayList<>();
     private Toolbar toolbar;
-    private boolean isContentViewEnabled = false;
-    private Button continueBtn;
-    ArrayList<PdfModel> selectedModels;
     private ProgressBar progressBar;
-    private int limitFile = 20;
-    private int offset = 0;
-    private boolean isLoading = false;
     ArrayList<PdfModel> searchList = new ArrayList<>();
-    private TextView first_display;
+    Intent intent;
+
 
 
     @Override
@@ -90,7 +86,7 @@ public class AllToolsViewActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        Intent intent = getIntent();
+        intent = getIntent();
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -170,167 +166,11 @@ public class AllToolsViewActivity extends AppCompatActivity {
 
     }
 
-  /*  private void getPopupMenuFileName() {
-
-        ArrayList<PdfModel> selectedFilePaths = mergeAdapter.getSelectedItems();
-        ArrayList<String> selectedFilePathStrings = new ArrayList<>();
-
-        if (selectedFilePaths != null) {
-            for (PdfModel pdfModel : selectedFilePaths) {
-                selectedFilePathStrings.add(pdfModel.getPath());
-            }
-        }
-
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_popup_layout);
-        selectedModels = mergeAdapter.getSelectedModels();
-
-        EditText editText;
-        Button cancelBtn, okBtn;
-        TextView textTitle, textMessage;
-        editText = dialog.findViewById(R.id.editText);
-        cancelBtn = dialog.findViewById(R.id.buttonNo);
-        okBtn = dialog.findViewById(R.id.buttonYes);
-        textTitle = dialog.findViewById(R.id.textTitle);
-        textTitle.setText("Pdf Merge");
-        textMessage = dialog.findViewById(R.id.textMessage);
-        textMessage.setText("Please enter your file name");
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fileName = editText.getText().toString();
-                startMergePdf(selectedFilePathStrings, fileName );
-                dialog.dismiss();
-
-            }
-        });
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setGravity(Gravity.END);
-    }
-
-    private void startMergePdf(ArrayList<String> selectedPaths, String fileName) {
-        Dialog mdialog = new Dialog(this);
-        mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mdialog.setContentView(R.layout.progress_dialog);
-        mdialog.setCanceledOnTouchOutside(false);
-        TextView textView = mdialog.findViewById(R.id.loading_text);
-        textView.setText("Combining Pdf....");
-        mdialog.getWindow ().setBackgroundDrawableResource (android.R.color.transparent);
-        String dest = Environment.getExternalStorageDirectory()+"/MergedPdf/"+fileName;
-        File file = new File(dest);
-        mdialog.show();
-        if (!file.getParentFile().exists()){
-            file.getParentFile().mkdir();
-            if (!TextUtils.isEmpty(fileName)){
-                startMergingPdfFile(selectedPaths, fileName, dest, mdialog);
-            }
-            else{
-                Toast.makeText(this, "Please enter file name", Toast.LENGTH_SHORT).show();
-                mdialog.dismiss();
-            }
-        }
-        else{
-        }
-        if (!TextUtils.isEmpty(fileName)){
-            startMergingPdfFile(selectedPaths, fileName, dest, mdialog);
-
-        }else{
-            Toast.makeText(this, "Please enter your file name", Toast.LENGTH_SHORT).show();
-            mdialog.dismiss();
-        }
-    }
-    private void startMergingPdfFile(ArrayList<String> inputPdfs, String fileName, String dest, Dialog mdialog) {
-        mdialog.show();
-        new CountDownTimer(3500, 1500){
-            @Override
-            public void onTick(long l) {
-            }
-            @Override
-            public void onFinish() {
-                try {
-                    PdfWriter writer = writer = new PdfWriter(dest+".pdf");
-                    PdfDocument outputPdf = new PdfDocument(writer);
-                    // Create a PDF merger
-                    PdfMerger merger = new PdfMerger(outputPdf);
-                    // Add each input PDF to the merger
-                    for (String inputPdf : inputPdfs) {
-                        PdfDocument pdf = pdf = new PdfDocument(new PdfReader(inputPdf));
-                        merger.merge(pdf, 1, pdf.getNumberOfPages());
-                        pdf.close();
-
-                    }
-                    // Close the output PDF
-                    outputPdf.close();
-                    Toast.makeText(getApplicationContext(), "Merged Successfully", Toast.LENGTH_SHORT).show();
-                    popupDoneDialog(dest, fileName);
-                    mdialog.dismiss();
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                    mdialog.dismiss();
-                    Toast.makeText(AllToolsViewActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        }.start();
-    }
-
-    private void popupDoneDialog(String destiny, String title) {
-        Dialog successDialog = new Dialog(this);
-        successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        successDialog.setContentView(R.layout.upload_done_layout);
-        TextView textView1, textView2, textView3;
-        Button noButton, yesButton;
-        ImageView word_icon;
-        textView1 = successDialog.findViewById(R.id.successText);
-        textView2 = successDialog.findViewById(R.id.pathText);
-        textView3 = successDialog.findViewById(R.id.question_text);
-        noButton = successDialog.findViewById(R.id.no_btn);
-        yesButton = successDialog.findViewById(R.id.yes_btn);
-        word_icon = successDialog.findViewById(R.id.done_icon);
-
-        textView1.setText("Pdf Combined Successfully !!");
-        textView2.setText(destiny+title);
-        word_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.c_c));
-        textView3.setText("Do you want to combine more ?");
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                startActivity(new Intent(AllToolsViewActivity.this, ToolsActivity.class));
-
-            }
-        });
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                startActivity(getIntent());
-            }
-        });
-        successDialog.show();
-        successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        successDialog.getWindow().setGravity(Gravity.TOP);
-    }*/
-
 
     private ArrayList<PdfModel> loadFiles(Context context) {
 
         ArrayList<PdfModel> arrayList = new ArrayList<>();
 
-        String recentPath = Environment.getExternalStorageDirectory() +"/RecentFile/";
-        File recentFile = new File(recentPath);
 
         Uri uri = MediaStore.Files.getContentUri("external");
         String [] projection = {
@@ -373,6 +213,7 @@ public class AllToolsViewActivity extends AppCompatActivity {
 
             }
         }
+        cursor.close();
 
         return arrayList;
     }
@@ -411,8 +252,57 @@ public class AllToolsViewActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        //menuItem.expandActionView();
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint("Search Files");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                String input = newText.toLowerCase();
+                ArrayList<PdfModel> searchList = new ArrayList<>();
+                for (PdfModel model : modelArrayList){
+                    if (model.getTitle().toLowerCase().contains(input)){
+                        searchList.add(model);
+                    }
+                }
+
+                if (intent.hasExtra("lockBtn")){
+                    lockAdapter.updateSearchList(searchList);
+                }
+                else if (intent.hasExtra("wordBtn")){
+                    wordAdapter.updateSearchList(searchList);
+                }
+                else if (intent.hasExtra("toImageBtn")){
+                    extractImagesAdapter.updateSearchList(searchList);
+                }
+                else if (intent.hasExtra("splitBtn")){
+                    splitAdapter.updateSearchList(searchList);
+                }
+                else if (intent.hasExtra("waterBtn")){
+                    waterMarkAdapter.updateSearchList(searchList);
+                }
+                else if (intent.hasExtra("unlockBtn")){
+                    decryptAdapter.updateSearchList(searchList);
+                }
+
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        startActivity(new Intent(AllToolsViewActivity.this, ToolsActivity.class));
+        overridePendingTransition(0, 0);
     }
 
 }

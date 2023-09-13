@@ -34,6 +34,7 @@ public class EncryptDecrypt {
         }
     }
 
+
     public static void encrypt(String inputFilePath, File outputFilePath,
                         String userPassword, String ownerPassword) throws IOException {
         /*PdfReader pdfReader = new PdfReader(inputFilePath);

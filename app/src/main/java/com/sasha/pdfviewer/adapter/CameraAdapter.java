@@ -11,10 +11,11 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.sasha.pdfviewer.R;
 import com.sasha.pdfviewer.model.ImageModel;
-import com.sasha.pdfviewer.tools.CameraFolderActivity;
-import com.squareup.picasso.Picasso;
+import com.sasha.pdfviewer.view.AllImageActivity;
+
 
 import java.util.ArrayList;
 
@@ -40,12 +41,13 @@ public class CameraAdapter extends RecyclerView.Adapter<CameraAdapter.ViewHolder
         ImageModel imageModel = uriArrayList.get(position);
         Uri uri = imageModel.getUri();
 
-        Picasso.get().load(uri).into(holder.imageView);
+
+        Glide.with(context).load(uri).into(holder.imageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, CameraFolderActivity.class);
+                Intent intent = new Intent(context, AllImageActivity.class);
                 //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

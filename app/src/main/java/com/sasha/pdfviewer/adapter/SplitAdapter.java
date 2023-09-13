@@ -33,6 +33,7 @@ import com.sasha.pdfviewer.model.PdfModel;
 import com.sasha.pdfviewer.tools.ToolsActivity;
 import com.sasha.pdfviewer.utils.EncryptDecrypt;
 import com.sasha.pdfviewer.utils.SplitUtil;
+import com.sasha.pdfviewer.utils.SuccessDialogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -135,7 +136,7 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
         }*/
 
         File destiny = new File(Environment.getExternalStorageDirectory() +
-                "/Split Folder/" + title);
+                "/Split PDF/" + title);
         if (!destiny.getParentFile().exists()){
             destiny.getParentFile().mkdir();
         }
@@ -170,47 +171,9 @@ public class SplitAdapter extends RecyclerView.Adapter<SplitAdapter.ViewHolder> 
     }
 
     private void popupSuccessDialog(View view, String filPath, String dest, String title){
-        Dialog successDialog = new Dialog(view.getRootView().getContext());
-        successDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        successDialog.setContentView(R.layout.upload_done_layout);
-        TextView textView1, textView2, textView3;
-        Button noButton, yesButton;
-        ImageView word_icon;
+        SuccessDialogUtil.showSuccessDialog(view, dest, title, "Split Successfully",
+                "Do you want to split another file", R.drawable.ic_baseline_call_split_24 );
 
-        textView1 = successDialog.findViewById(R.id.successText);
-        textView2 = successDialog.findViewById(R.id.pathText);
-        textView3 = successDialog.findViewById(R.id.question_text);
-        noButton = successDialog.findViewById(R.id.no_btn);
-        yesButton = successDialog.findViewById(R.id.yes_btn);
-        word_icon = successDialog.findViewById(R.id.done_icon);
-
-        textView1.setText(R.string.split_success);
-        textView2.setText(dest+title);
-        word_icon.setImageDrawable(context.getDrawable(R.drawable.s_s));
-        textView3.setText(R.string.split_question);
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-                Intent intent = new Intent(context, ToolsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-
-            }
-        });
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                successDialog.dismiss();
-
-            }
-
-        });
-        successDialog.show();
-        successDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        successDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        successDialog.getWindow().setGravity(Gravity.TOP);
     }
 
     @Override
